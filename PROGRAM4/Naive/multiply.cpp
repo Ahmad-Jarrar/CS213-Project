@@ -1,11 +1,4 @@
-#include <iostream>
-#include <random>
 #include <chrono>
-#include <boost/numeric/ublas/vector.hpp>
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/io.hpp>
-#include <boost/numeric/ublas/operation.hpp>
-#include <boost/numeric/ublas/operation_blocked.hpp>
 
 #include "../common.hpp"
 
@@ -28,6 +21,33 @@ matrix<int> matmul_naive (matrix<int> m, matrix<int> n) {
         for (size_t j = 0; j < n.size2(); j++)
         {
             for (size_t k = 0; k < m.size2(); k++)
+            {
+                mn(i,j) += m(i,k) * n(k,j);
+            }
+            
+        }
+        
+    }
+    return mn;
+}
+// https://gist.github.com/nadavrot/5b35d44e8ba3dd718e595e40184d03f0
+matrix<int> matmul_naive_optimized (matrix<int> m, matrix<int> n) {
+
+    if (m.size2() != n.size1()) {
+        perror("m.size2() != n.size1()\n");
+        perror("Cannot multiply!");
+        exit(1);
+    }
+    matrix<int> mn(m.size1(), n.size2());
+
+    // No need. Matrix is automatically initialized to zero
+    // initialize_matrix(mn, false, 0);
+
+    for (size_t i = 0; i < m.size1(); i++)
+    {
+        for (size_t k = 0; k < m.size2(); k++)
+        {
+            for (size_t j = 0; j < n.size2(); j++)
             {
                 mn(i,j) += m(i,k) * n(k,j);
             }
@@ -68,7 +88,15 @@ int main()
 
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start); 
 
-    std::cout << "Time taken(microseconds): " << duration.count() << std::endl;
+    std::cout << "Time taken Naive(microseconds): " << duration.count() << std::endl;
+
+    start = std::chrono::high_resolution_clock::now();
+    C = matmul_naive_optimized(A, B);
+    stop = std::chrono::high_resolution_clock::now();
+
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start); 
+
+    std::cout << "Time taken Naive Optimized(microseconds): " << duration.count() << std::endl;
 
     // Print product
     // print_matrix(C);

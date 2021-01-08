@@ -1,5 +1,6 @@
 CXX=g++
-CXXFLAGS=-std=c++17 -Wall -g -I.
+# https://richardstartin.github.io/posts/mmm-revisited
+CXXFLAGS=-std=c++17 -Wall -I. -Ofast
 
 INC_DIR = ..
 SRC_DIR = .
@@ -9,8 +10,8 @@ SRC := $(addprefix $(SRC_DIR)/, multiply.cpp)
 
 # LIBS=-lpthread
 
-multiply: multiply.cpp $(DEPS) 
-	$(CXX) -o $@ $^
+multiply: $(SRC) $(DEPS) 
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
 clean:
 	rm -f *.o multiply
