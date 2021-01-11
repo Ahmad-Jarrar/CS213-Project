@@ -6,74 +6,74 @@ using namespace std;
 void convertString(string a, string b)
 {
 
-    int count = 0;
-
-    int freq_a[256] = {0}, freq_b[256] = {0};
     int delete_count = 0;
     int insert_count = 0;
 
-    //store characters in a vector
-    for (char c : a)
-    {
-        freq_a[(int)c]++;
-    }
+    int found = 0;
+    int size = 0;
+    string final_string = "";
 
-    for (char c : b)
+    for (int k = 0; k < a.length(); k++)
     {
-        freq_b[(int)c]++;
-    }
+        string b_temp = "";
+        found = 0;
 
-    int j = 0;
-    string b_temp = "";
-    for (int i = 0; i < b.length(); i++)
-    {
-        if (freq_a[(int)b.at(i)] < freq_b[(int)b.at(i)])
+        for (int i = k; i < a.length(); i++)
         {
 
-            if (b.at(i) == ' ')
-                cout << "Deleted Space" << endl;
+            for (int j = found; j < b.length(); j++)
+            {
+
+                if (b.at(j) == a.at(i))
+                {
+                    found = j + 1;
+                    string temp2(1, a.at(i));
+                    b_temp += temp2;
+                    break;
+                }
+            }
+        }
+        if (b_temp.length() > size)
+        {
+            final_string = b_temp;
+            size = final_string.length();
+        }
+    }
+
+    cout << final_string << endl;
+    cout << a << endl;
+    cout << b << endl;
+
+    int ptr = 0;
+
+    for (int i = 0; i < b.size(); i++)
+    {
+        if (b[i] == final_string[ptr])
+            ptr++;
+        else
+        {
+            if (b[i] == ' ')
+                cout << "Deleted space" << endl;
             else
-                cout << "Deleted " << b.at(i) << endl;
-            freq_b[(int)b.at(i)]--;
+                cout << "Deleted character: " << b[i] << endl;
             delete_count++;
         }
-        else
-        {
-            string temp1(1, b.at(i));
-            b_temp += temp1;
-        }
     }
-
-    b = b_temp;
-
-    for (int i = 0; i < a.length(); i++)
+    ptr = 0;
+    for (int i = 0; i < a.size(); i++)
     {
-
-        if (i < b.length() && a.at(i) == b.at(i))
-        {
-
-            continue;
-        }
+        if (a[i] == final_string[ptr])
+            ptr++;
         else
         {
-
-            string temp2(1, a.at(i));
-
-            if (i < b.length())
-            {
-                b.insert(i, temp2);
-            }
-            else
-                b += temp2;
-
-            if (temp2 == " ")
+            if (a[i] == ' ')
                 cout << "Inserted space" << endl;
-
             else
-                cout << "Inserted: " << a.at(i) << endl;
+                cout << "Insert character: " << a[i] << endl;
             insert_count++;
         }
     }
+
     cout << "Minimum Number of deletions: " << delete_count << endl;
     cout << "Minimum Number of insertions: " << insert_count << endl;
 }
@@ -81,15 +81,21 @@ void convertString(string a, string b)
 // Driver Code
 int main()
 {
-    string a, b;
-    cout << "Enter the string to be converted: " << endl;
-    getline(cin, b);
-    cout << "Enter the string to be matched: " << endl;
-    getline(cin, a);
+    do
+    {
+        cout << "Want to exit the program type -1" << endl;
+        string a, b;
+        cout << "Enter the string to be converted or exit the program: " << endl;
+        getline(cin >> ws, b);
+        if (b == "-1")
+            break;
+        
+        cout << "Enter the string to be matched: " << endl;
+        getline(cin >> ws, a);
+        convertString(a, b);
 
+    } while (true);
     // Function Call
-
-    convertString(a, b);
 
     return 0;
 }
