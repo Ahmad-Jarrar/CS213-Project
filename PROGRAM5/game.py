@@ -21,6 +21,11 @@ class Direction(Enum):
 
 class Ship:
     """An object to store the data of one ship"""
+    ship_type = {
+        2: pygame.image.load("./Resources/Images/size2.png"),
+        3: pygame.image.load("./Resources/Images/size3.png"),
+        4: pygame.image.load("./Resources/Images/size4.png")
+    }
 
     def __init__(self, x, y, d, l):
         self.location = (x, y)
@@ -49,16 +54,45 @@ class Ship:
         return "<Ship Object: ({},{}), {}, Length {}>".format(
             *self.location, self.direction, self.length)
 
+    def draw(self,screen, cell_size, margin, offset):
+        size = []
+        pos = []
+        ship_img = pygame.transform.scale(self.ship_type[self.length], (cell_size, self.length * cell_size))
+
+        if self.direction == Direction.NORTH:
+            pos = [offset + self.location[0] * cell_size, margin + (self.location[1] - self.length + 1) * cell_size]
+            size = [self.length * cell_size, cell_size]
+            ship_img = pygame.transform.rotate(ship_img, 0)
+
+        elif self.direction == Direction.EAST:
+            pos = [offset + self.location[0] * cell_size, margin + self.location[1] * cell_size]
+            size = [cell_size, self.length * cell_size]
+            ship_img = pygame.transform.rotate(ship_img, 90)
+
+        elif self.direction == Direction.SOUTH:
+            pos = [offset + self.location[0] * cell_size, margin + self.location[1] * cell_size]
+            size = [self.length * cell_size, cell_size]
+            ship_img = pygame.transform.rotate(ship_img, 2 * 90)
+
+        elif self.direction == Direction.WEST:
+            pos = [offset + (self.location[0] - self.length + 1) * cell_size, margin + self.location[1] * cell_size]
+            size = [cell_size, self.length * cell_size]
+            ship_img = pygame.transform.rotate(ship_img, 3 * 90)
+
+        screen.blit(ship_img, pygame.Rect([pos[0], pos[1], size[0], size[1]]))
+
 
 class Board(ABC):
     """A abstract base class for boards"""
 
-    def __init__(self, size=10, ship_sizes=[6, 4, 3, 3, 2]):
+    def __init__(self, size=10, ship_sizes=[6, 4, 3, 3, 2], cell_size=40, border_size=0.3):
         self.size = size
         self.ship_sizes = ship_sizes
         self.ships_list = []
         self.hits_list = []
         self.misses_list = []
+        self.cell_size = cell_size
+        self.border_size = border_size
 
     def is_valid(self, ship):
         """Checks whether a ship would be a valid placement on the board"""
@@ -161,6 +195,8 @@ class Board(ABC):
                 output[x + y * (self.size + 1)] = "S"
         return output
 
+    def draw_background(self):
+        pass
 
 class PlayerBoard(Board):
     """A Board for user input"""
@@ -243,12 +279,6 @@ class Display:
         "text": pygame.color.Color("black")
     }
 
-    ships = {
-        2: pygame.image.load("./Resources/Images/size2.png"),
-        3: pygame.image.load("./Resources/Images/size3.png"),
-        4: pygame.image.load("./Resources/Images/size4.png")
-    }
-
     def __init__(self, board_size=10, cell_size=30, margin=15, menu_height = 100):
         self.board_size = board_size
         self.cell_size = cell_size
@@ -305,34 +335,8 @@ class Display:
 
         if lower_board is not None:
             for ship in lower_board.ships_list:
-                x, y = ship.location
-                l = ship.length
-                sd = ship.direction
-                size = []
-                pos = []
-                ship_img = pygame.transform.scale(self.ships[l], (self.cell_size, l * self.cell_size))
-
-                if sd == Direction.NORTH:
-                    pos = [offset + x * self.cell_size, self.margin + (y - l + 1) * self.cell_size]
-                    size = [l * self.cell_size, self.cell_size]
-                    ship_img = pygame.transform.rotate(ship_img, 0)
-
-                elif sd == Direction.EAST:
-                    pos = [offset + x * self.cell_size, self.margin + y * self.cell_size]
-                    size = [self.cell_size, l * self.cell_size]
-                    ship_img = pygame.transform.rotate(ship_img, 90)
-
-                elif sd == Direction.SOUTH:
-                    pos = [offset + x * self.cell_size, self.margin + y * self.cell_size]
-                    size = [l * self.cell_size, self.cell_size]
-                    ship_img = pygame.transform.rotate(ship_img, 2 * 90)
-
-                elif sd == Direction.WEST:
-                    pos = [offset + (x - l + 1) * self.cell_size, self.margin + y * self.cell_size]
-                    size = [self.cell_size, l * self.cell_size]
-                    ship_img = pygame.transform.rotate(ship_img, 3 * 90)
-
-                self.screen.blit(ship_img, pygame.Rect([pos[0], pos[1], size[0], size[1]]))
+                ship.draw(self.screen, self.cell_size, self.margin, offset)
+                
 
     def get_input(self):
         """Converts MouseEvents into board corrdinates, for input"""
