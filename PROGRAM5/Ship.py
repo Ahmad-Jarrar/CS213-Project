@@ -64,7 +64,7 @@ class Ship:
         return "<Ship Object: ({},{}), {}, Length {}>".format(
             *self.location, self.direction, self.length)
 
-    def draw(self, screen, margin, offset):
+    def draw(self, screen):
         pos = self.starting_position
         size = self.size
-        screen.blit(self.image, pygame.Rect([pos[0] + offset, pos[1] + margin, size[0], size[1]]))
+        screen.blit(self.image, pygame.Rect([pos[0], pos[1], size[0], size[1]]))
