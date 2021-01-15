@@ -4,6 +4,7 @@ from abc import ABC
 from itertools import zip_longest
 
 from Ship import Ship
+from animations import Smoke
 
 class Board(ABC):
     def __init__(self, size, ship_sizes, cell_size, border_size, position):
@@ -12,12 +13,12 @@ class Board(ABC):
         self.ships_list = []
         self.hits_list = []
         self.misses_list = []
+        self.smokes = []
         self.cell_size = cell_size
         self.border_size = border_size
         self.surface = pygame.Surface((size * cell_size, size * cell_size))
         self.rect = pygame.Rect(position[0], position[1], size * cell_size, size * cell_size)
         self.ships_hidden = False
-
         self.random_initialize()
 
     def draw(self, screen):
@@ -38,26 +39,20 @@ class Board(ABC):
                                       [(x+0.5) * self.cell_size + self.border_size,
                                       (y+0.5) * self.cell_size + self.border_size], 
                                       3)
-            # pygame.draw.rect(self.surface, pygame.Color(((8, 73, 119))),
-            #                          [x * self.cell_size + self.border_size,
-            #                           y * self.cell_size + self.border_size,
-            #                           self.cell_size - 2*self.border_size, 
-            #                           self.cell_size - 2*self.border_size])
-        
-        for x,y in self.hits_list:
-            pygame.draw.circle(self.surface, pygame.Color("red"), 
-                                      [(x+0.5) * self.cell_size + self.border_size,
-                                      (y+0.5) * self.cell_size + self.border_size], 
-                                      6)
-            # pygame.draw.rect(self.surface, pygame.Color(((255, 0, 0))),
-            #                          [x * self.cell_size + self.border_size,
-            #                           y * self.cell_size + self.border_size,
-            #                           self.cell_size - 2*self.border_size, 
-            #                           self.cell_size - 2*self.border_size])
+
+        for smoke in self.smokes:
+            smoke.play_frame(self.surface)
 
         screen.blit(self.surface, self.rect)
 
+    def clear(self):
+        self.ships_list = []
+        self.hits_list = []
+        self.misses_list = []
+        self.smokes = []
+
     def random_initialize(self):
+        self.clear()
         for ship_length in self.ship_sizes:
             ship_added = False
             while not ship_added:
@@ -119,6 +114,10 @@ class Board(ABC):
             for ship_coordinate in ship.coordinate_list:
                 if (x, y) == ship_coordinate:
                     self.hits_list.append((x, y))
+                    self.smokes.append(Smoke(pygame.Rect(x * self.cell_size,
+                                                        y * self.cell_size,
+                                                        self.cell_size, 
+                                                        self.cell_size)))
                     return 2
 
         self.misses_list.append((x, y))
@@ -142,8 +141,8 @@ class Board(ABC):
                     x = (x - self.rect.x) // self.cell_size
                     y = (y - self.rect.y) // self.cell_size
                     if x in range(self.size) and y in range(self.size):
-                        return x, y
-        return None, None
+                        return x, y, event.button
+        return None, None, None
 
     @property
     def gameover(self):
@@ -168,33 +167,28 @@ class PlayerBoard(Board):
         while True:
             self.draw(screen)
 
-            # if self.ship_to_place:
-            #     text = 'Click where you want your {}-long ship to be:'.format(
-            #         self.ship_to_place)
-            # else:
-            #     text = 'Click again to rotate a ship, or elsewhere if ready.'
-            # self.display.show_text(text, lower=True)
-
-
-            x, y = self.get_coordinates()
+            x, y, button = self.get_coordinates()
             if x is not None and y is not None:
                 ship = self.get_ship(x, y)
                 if ship:
                     self.remove_ship(ship)
-                    ship.rotate()
-                    if self.is_valid(ship):
+                    if button == 3:
+                        ship.rotate()
+                        while not self.is_valid(ship):
+                            ship.rotate()
                         self.add_ship(ship)
                 elif self.ship_to_place:
-                    ship = Ship(x, y, direction, self.ship_to_place, self.cell_size)
-                    if self.is_valid(ship):
-                        self.add_ship(ship)
-                    else:
-                        direction = (direction + 1) % 4
+                    if button == 1:
+                        ship = Ship(x, y, direction, self.ship_to_place, self.cell_size)
+                        if self.is_valid(ship):
+                            self.add_ship(ship)
+                        else:
+                            direction = (direction + 1) % 4
                 else:
                     break
 
-                if self.is_valid(ship):
-                    self.add_ship(ship)
+                # if self.is_valid(ship):
+                #     self.add_ship(ship)
 
             pygame.display.flip()
             pygame.time.Clock().tick(60)

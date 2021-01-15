@@ -3,9 +3,9 @@ import pygame
 class Ship:
     """An object to store the data of one ship"""
     ship_type = {
-        2: pygame.image.load("./Resources/Images/size2.png"),
-        3: pygame.image.load("./Resources/Images/size3.png"),
-        4: pygame.image.load("./Resources/Images/size4.png")
+        2: pygame.image.load("./Resources/Images/ships/size2.png"),
+        3: pygame.image.load("./Resources/Images/ships/size3.png"),
+        4: pygame.image.load("./Resources/Images/ships/size4.png")
     }
 
     directions = {
