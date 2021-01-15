@@ -22,26 +22,25 @@ class Game():
         pygame.display.set_caption("Battleships")
         self.screen.fill(pygame.Color(236,240,241))
 
-        self.pboard = PlayerBoard(board_size, ship_sizes, cell_size, 0.3)
-        self.pboard.populate(self.screen, self.subwindow_positions["Player Board"], self.get_input)
-
-        self.aiboard = AIBoard(board_size, ship_sizes, cell_size, 0.3)
+        self.pboard = PlayerBoard(board_size, ship_sizes, cell_size, 0.3, self.subwindow_positions["Player Board"])
+        self.pboard.populate(self.screen)
+        self.aiboard = AIBoard(board_size, ship_sizes, cell_size, 0.3, self.subwindow_positions["AI Board"])
 
     def play(self):
         while not self.game_over:
             if self.player_turn():
                 self.ai_turn()
-                
+
             self.screen.fill(pygame.Color(236,240,241))
-            self.aiboard.draw(self.screen, self.subwindow_positions["AI Board"])
-            self.pboard.draw(self.screen, self.subwindow_positions["Player Board"])
+            self.aiboard.draw(self.screen)
+            self.pboard.draw(self.screen)
             
             pygame.display.flip()
             pygame.time.Clock().tick(60)
             
     def player_turn(self):
         """Uses input to decide if a shot is valid or not"""
-        x, y = self.get_input()
+        x, y = self.aiboard.get_coordinates()
         if self.aiboard.valid_target(x, y):
             result = self.aiboard.shoot(x, y)
             # animate
@@ -63,19 +62,19 @@ class Game():
         else:
             return False
 
-    def get_input(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.display.quit()
-                pygame.quit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                x, y = pygame.mouse.get_pos()
-                x = x % (self.board_size * self.cell_size + self.margin)
-                x = (x - self.margin) // self.cell_size
-                y = (y - self.margin) // self.cell_size
-                if x in range(self.board_size) and y in range(self.board_size):
-                    return x, y
-        return None, None
+    # def get_input(self):
+    #     for event in pygame.event.get():
+    #         if event.type == pygame.QUIT:
+    #             pygame.display.quit()
+    #             pygame.quit()
+    #         elif event.type == pygame.MOUSEBUTTONDOWN:
+    #             x, y = pygame.mouse.get_pos()
+    #             x = x % (self.board_size * self.cell_size + self.margin)
+    #             x = (x - self.margin) // self.cell_size
+    #             y = (y - self.margin) // self.cell_size
+    #             if x in range(self.board_size) and y in range(self.board_size):
+    #                 return x, y
+    #     return None, None
 
     # TODO: Game over logic
     @property

@@ -6,7 +6,7 @@ from itertools import zip_longest
 from Ship import Ship
 
 class Board(ABC):
-    def __init__(self, size, ship_sizes, cell_size, border_size):
+    def __init__(self, size, ship_sizes, cell_size, border_size, position):
         self.size = size
         self.ship_sizes = ship_sizes
         self.ships_list = []
@@ -15,9 +15,12 @@ class Board(ABC):
         self.cell_size = cell_size
         self.border_size = border_size
         self.surface = pygame.Surface((size * cell_size, size * cell_size))
+        self.rect = pygame.Rect(position[0], position[1], size * cell_size, size * cell_size)
         self.ships_hidden = False
 
-    def draw(self, screen, position, hide_ships=False):
+        self.random_initialize()
+
+    def draw(self, screen):
         self.surface.fill(pygame.Color((43,118,187)))
         for y in range(self.size):
             for x in range(self.size):
@@ -31,20 +34,40 @@ class Board(ABC):
                 ship.draw(self.surface)
 
         for x,y in self.misses_list:
-            pygame.draw.rect(self.surface, pygame.Color(((8, 73, 119))),
-                                     [x * self.cell_size + self.border_size,
-                                      y * self.cell_size + self.border_size,
-                                      self.cell_size - 2*self.border_size, 
-                                      self.cell_size - 2*self.border_size])
+            pygame.draw.circle(self.surface, pygame.Color((8, 73, 119)), 
+                                      [(x+0.5) * self.cell_size + self.border_size,
+                                      (y+0.5) * self.cell_size + self.border_size], 
+                                      3)
+            # pygame.draw.rect(self.surface, pygame.Color(((8, 73, 119))),
+            #                          [x * self.cell_size + self.border_size,
+            #                           y * self.cell_size + self.border_size,
+            #                           self.cell_size - 2*self.border_size, 
+            #                           self.cell_size - 2*self.border_size])
         
         for x,y in self.hits_list:
-            pygame.draw.rect(self.surface, pygame.Color(((255, 0, 0))),
-                                     [x * self.cell_size + self.border_size,
-                                      y * self.cell_size + self.border_size,
-                                      self.cell_size - 2*self.border_size, 
-                                      self.cell_size - 2*self.border_size])
+            pygame.draw.circle(self.surface, pygame.Color("red"), 
+                                      [(x+0.5) * self.cell_size + self.border_size,
+                                      (y+0.5) * self.cell_size + self.border_size], 
+                                      6)
+            # pygame.draw.rect(self.surface, pygame.Color(((255, 0, 0))),
+            #                          [x * self.cell_size + self.border_size,
+            #                           y * self.cell_size + self.border_size,
+            #                           self.cell_size - 2*self.border_size, 
+            #                           self.cell_size - 2*self.border_size])
 
-        screen.blit(self.surface, position)
+        screen.blit(self.surface, self.rect)
+
+    def random_initialize(self):
+        for ship_length in self.ship_sizes:
+            ship_added = False
+            while not ship_added:
+                x = random.randint(0, self.size - 1)
+                y = random.randint(0, self.size - 1)
+                ship_direction = random.randint(0,3)
+                ship = Ship(x, y, ship_direction, ship_length, self.cell_size)
+                if self.is_valid(ship):
+                    self.add_ship(ship)
+                    ship_added = True
 
     def is_valid(self, ship):
         """Checks whether a ship would be a valid placement on the board"""
@@ -108,6 +131,20 @@ class Board(ABC):
                 return ship
         return None
     
+    def get_coordinates(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.display.quit()
+                pygame.quit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = pygame.mouse.get_pos()
+                if self.rect.collidepoint(x,y):
+                    x = (x - self.rect.x) // self.cell_size
+                    y = (y - self.rect.y) // self.cell_size
+                    if x in range(self.size) and y in range(self.size):
+                        return x, y
+        return None, None
+
     @property
     def gameover(self):
         """Checks to see if all the ships have been fully hit"""
@@ -120,16 +157,16 @@ class Board(ABC):
 class PlayerBoard(Board):
     """A Board for user input"""
 
-    def __init__(self, board_size, ship_sizes, cell_size, border_size):
+    def __init__(self, board_size, ship_sizes, cell_size, border_size, position):
         """Initialises the board by placing ships."""
-        super().__init__(board_size, ship_sizes, cell_size, border_size)
+        super().__init__(board_size, ship_sizes, cell_size, border_size, position)
 
         
 
-    def populate(self, screen, position, get_coordinates):
+    def populate(self, screen):
         direction = Ship.directions["NORTH"]
         while True:
-            self.draw(screen, position)
+            self.draw(screen)
 
             # if self.ship_to_place:
             #     text = 'Click where you want your {}-long ship to be:'.format(
@@ -138,7 +175,8 @@ class PlayerBoard(Board):
             #     text = 'Click again to rotate a ship, or elsewhere if ready.'
             # self.display.show_text(text, lower=True)
 
-            x, y = get_coordinates()
+
+            x, y = self.get_coordinates()
             if x is not None and y is not None:
                 ship = self.get_ship(x, y)
                 if ship:
@@ -161,6 +199,7 @@ class PlayerBoard(Board):
             pygame.display.flip()
             pygame.time.Clock().tick(60)
 
+    
     @property
     def ship_to_place(self):
         """Returns a ship length that needs to be placed, if any"""
@@ -175,17 +214,8 @@ class PlayerBoard(Board):
 class AIBoard(Board):
     """A Board controlled by a AI"""
 
-    def __init__(self, board_size, ship_sizes, cell_size, border_size):
+    def __init__(self, board_size, ship_sizes, cell_size, border_size, position):
         """Initialises the board by randomly placing ships"""
-        super().__init__(board_size, ship_sizes, cell_size, border_size)
+        super().__init__(board_size, ship_sizes, cell_size, border_size, position)
         self.ships_hidden = True
-        for ship_length in self.ship_sizes:
-            ship_added = False
-            while not ship_added:
-                x = random.randint(0, board_size - 1)
-                y = random.randint(0, board_size - 1)
-                ship_direction = random.randint(0,3)
-                ship = Ship(x, y, ship_direction, ship_length, cell_size)
-                if self.is_valid(ship):
-                    self.add_ship(ship)
-                    ship_added = True
+        
