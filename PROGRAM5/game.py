@@ -63,7 +63,7 @@ class Game():
 
 
     def play(self):
-        self.aiTurn = aiTurn()
+        self.aiTurn = aiTurn(self.board_size)
         self.screen.fill(pygame.Color(236,240,241))
         self.pboard = PlayerBoard(self.board_size, self.ship_sizes, 
                                     self.cell_size, self.border_size, 
@@ -92,8 +92,6 @@ class Game():
             self.aiboard.draw(self.screen)
             self.pboard.draw(self.screen)
             
-
-
             pygame.display.flip()
             pygame.time.Clock().tick(60)
             
@@ -118,24 +116,18 @@ class Game():
         """Uses input to decide if a shot is valid or not"""
         x, y = -1, -1
         
-        if self.aiTurn.ai_hit_count > 0:
-            x,y = self.aiTurn.getLocAfterHit(self.pboard)
-        
-        
-        if self.aiTurn.ai_hit_count == 0:
-            while not self.pboard.valid_target(x, y):
-                x = random.randint(0, self.board_size - 1)
-                y = random.randint(0, self.board_size - 1)
+        x,y = self.aiTurn.getLoc(self.pboard)
         
         if self.pboard.valid_target(x, y):
             result = self.pboard.shoot(x, y)
-            
+
             if result == 2:
                 Explosion(pygame.Rect(self.subwindow_positions["Player Board"][0] + x * self.cell_size,
                                       self.subwindow_positions["Player Board"][1] + y * self.cell_size,
                                       self.cell_size, self.cell_size)).play(self.screen)
                 if self.aiTurn.ai_hit_count == 0 or self.aiTurn.ai_hit_count == 1:
-                            self.aiTurn.ai_hit_count+=1                    
+                            self.aiTurn.ai_hit_count+=1
+                            self.aiTurn.attack_mode = 'd'                   
 
             elif result == 1:
                 Ripple(pygame.Rect(self.subwindow_positions["Player Board"][0] + x * self.cell_size,
