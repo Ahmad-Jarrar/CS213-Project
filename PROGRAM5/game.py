@@ -3,6 +3,7 @@ import pygame_menu
 import random
 from Board import PlayerBoard, AIBoard
 from animations import Explosion, Ripple
+from AI.AImove import aiTurn
 
 class Game():
     
@@ -62,6 +63,7 @@ class Game():
 
 
     def play(self):
+        self.aiTurn = aiTurn()
         self.screen.fill(pygame.Color(236,240,241))
         self.pboard = PlayerBoard(self.board_size, self.ship_sizes, 
                                     self.cell_size, self.border_size, 
@@ -115,20 +117,32 @@ class Game():
     def ai_turn(self):
         """Uses input to decide if a shot is valid or not"""
         x, y = -1, -1
-        while not self.pboard.valid_target(x, y):
-            x = random.randint(0, self.board_size - 1)
-            y = random.randint(0, self.board_size - 1)
         
-        if self.aiboard.valid_target(x, y):
+        if self.aiTurn.ai_hit_count > 0:
+            x,y = self.aiTurn.getLocAfterHit(self.pboard)
+        
+        
+        if self.aiTurn.ai_hit_count == 0:
+            while not self.pboard.valid_target(x, y):
+                x = random.randint(0, self.board_size - 1)
+                y = random.randint(0, self.board_size - 1)
+        
+        if self.pboard.valid_target(x, y):
             result = self.pboard.shoot(x, y)
+            
             if result == 2:
                 Explosion(pygame.Rect(self.subwindow_positions["Player Board"][0] + x * self.cell_size,
                                       self.subwindow_positions["Player Board"][1] + y * self.cell_size,
                                       self.cell_size, self.cell_size)).play(self.screen)
+                if self.aiTurn.ai_hit_count == 0 or self.aiTurn.ai_hit_count == 1:
+                            self.aiTurn.ai_hit_count+=1                    
+
             elif result == 1:
                 Ripple(pygame.Rect(self.subwindow_positions["Player Board"][0] + x * self.cell_size,
                                       self.subwindow_positions["Player Board"][1] + y * self.cell_size,
                                       self.cell_size, self.cell_size)).play(self.screen)
+                if self.aiTurn.ai_hit_count == 2 and self.aiTurn.ai_miss_after_hit_count < 2:
+                    self.aiTurn.ai_miss_after_hit_count+=1                      
             return True
         else:
             return False
