@@ -1,27 +1,62 @@
 import pygame
 
+pygame.mixer.init()
+ship_destruction_sound = pygame.mixer.Sound("./Resources/Sounds/explosion.wav")
+
+ship_images_active = {
+    "Destroyer": pygame.image.load("./Resources/Images/ships/2.png"),
+    "Submarine": pygame.image.load("./Resources/Images/ships/3s.png"),
+    "Cruiser": pygame.image.load("./Resources/Images/ships/3c.png"),
+    "Battleship": pygame.image.load("./Resources/Images/ships/5.png"),
+    "Carrier": pygame.image.load("./Resources/Images/ships/4.png")
+}
+
+ship_images_destroyed = {
+    "Destroyer": pygame.image.load("./Resources/Images/ships/2.png"),
+    "Submarine": pygame.image.load("./Resources/Images/ships/3s.png"),
+    "Cruiser": pygame.image.load("./Resources/Images/ships/3c.png"),
+    "Battleship": pygame.image.load("./Resources/Images/ships/5.png"),
+    "Carrier": pygame.image.load("./Resources/Images/ships/4.png")
+}
+
+ship_sizes = {
+    "Destroyer": 2,
+    "Submarine": 3,
+    "Cruiser": 3,
+    "Battleship": 5,
+    "Carrier": 4
+}
+directions = {
+    "NORTH": 0,
+    "EAST": 1,
+    "SOUTH": 2,
+    "WEST": 3
+}
+
 class Ship:
     """An object to store the data of one ship"""
-    ship_type = {
-        2: pygame.image.load("./Resources/Images/ships/size2.png"),
-        3: pygame.image.load("./Resources/Images/ships/size3.png"),
-        4: pygame.image.load("./Resources/Images/ships/size4.png")
-    }
+    
 
-    directions = {
-        "NORTH": 0,
-        "EAST": 1,
-        "SOUTH": 2,
-        "WEST": 3
-    }
+    
 
-    def __init__(self, x, y, d, l, cell_size):
+    def __init__(self, x, y, d, type, cell_size):
         self.location = (x, y)
         self.direction = d
-        self.length = l
+        self.type = type
+        self.length = ship_sizes[type]
         self.cell_size = cell_size
-        self.image = pygame.transform.scale(self.ship_type[l], (cell_size, l * cell_size))
-        self.image = pygame.transform.rotate(self.image, d * 90)
+        self.active = True
+        self.assign_image(ship_images_active[type])
+        
+    def assign_image(self, image):
+        self.image = pygame.transform.scale(image, (self.cell_size, self.length * self.cell_size))
+        self.image = pygame.transform.rotate(self.image, self.direction * 90)
+
+    def destroy(self):
+
+        ship_destruction_sound.play()
+        self.active = False
+        self.assign_image(ship_images_destroyed[self.type])
 
     @property
     def size(self):
@@ -34,24 +69,24 @@ class Ship:
     def coordinate_list(self):
         """Calculates the list of coordinates that the ship is located over"""
         x, y = self.location
-        if self.direction == Ship.directions["NORTH"]:
+        if self.direction == directions["NORTH"]:
             return [(x, y - i) for i in range(self.length)]
-        elif self.direction == Ship.directions["EAST"]:
+        elif self.direction == directions["EAST"]:
             return [(x + i, y) for i in range(self.length)]
-        elif self.direction == Ship.directions["SOUTH"]:
+        elif self.direction == directions["SOUTH"]:
             return [(x, y + i) for i in range(self.length)]
-        elif self.direction == Ship.directions["WEST"]:
+        elif self.direction == directions["WEST"]:
             return [(x - i, y) for i in range(self.length)]
 
     @property
     def starting_position(self):
-        if self.direction == Ship.directions["NORTH"]:
+        if self.direction == directions["NORTH"]:
             return [self.location[0] * self.cell_size, (self.location[1] - self.length + 1) * self.cell_size]
 
-        elif self.direction == Ship.directions["EAST"] or self.direction == Ship.directions["SOUTH"]:
+        elif self.direction == directions["EAST"] or self.direction == directions["SOUTH"]:
             return [self.location[0] * self.cell_size, self.location[1] * self.cell_size]
 
-        elif self.direction == Ship.directions["WEST"]:
+        elif self.direction == directions["WEST"]:
             return [(self.location[0] - self.length + 1) * self.cell_size, self.location[1] * self.cell_size]
 
     def rotate(self):

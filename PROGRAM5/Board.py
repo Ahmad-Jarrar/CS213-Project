@@ -1,15 +1,16 @@
 import pygame
+import pygame_menu
 import random
 from abc import ABC
 from itertools import zip_longest
 
-from Ship import Ship
-from animations import Smoke
+from Ship import Ship, directions, ship_sizes
+from animations import Smoke, Background
 
 class Board(ABC):
-    def __init__(self, size, ship_sizes, cell_size, border_size, position):
+    def __init__(self, size, ship_type_list, cell_size, border_size, position):
         self.size = size
-        self.ship_sizes = ship_sizes
+        self.ship_type_list = ship_type_list
         self.ships_list = []
         self.hits_list = []
         self.misses_list = []
@@ -20,16 +21,20 @@ class Board(ABC):
         self.rect = pygame.Rect(position[0], position[1], size * cell_size, size * cell_size)
         self.ships_hidden = False
         self.random_initialize()
+        self.background = Background(self.surface.get_rect())
 
     def draw(self, screen):
-        self.surface.fill(pygame.Color((43,118,187)))
+        self.background.play_frame(self.surface)
         for y in range(self.size):
             for x in range(self.size):
-                pygame.draw.rect(self.surface, pygame.Color(((53, 138, 217))),
-                                     [x * self.cell_size + self.border_size,
-                                      y * self.cell_size + self.border_size,
-                                      self.cell_size - 2*self.border_size, 
-                                      self.cell_size - 2*self.border_size])
+                pygame.draw.line(self.surface, pygame.Color((91, 196, 209)),
+                                 ((x) * self.cell_size,(y+1) * self.cell_size),
+                                 ((x+1) * self.cell_size,(y+1) * self.cell_size), width=1)
+
+                pygame.draw.line(self.surface, pygame.Color((91, 196, 209)),
+                                 ((x+1) * self.cell_size,(y) * self.cell_size),
+                                 ((x+1) * self.cell_size,(y+1) * self.cell_size), width=1)
+
         if not self.ships_hidden:
             for ship in self.ships_list:
                 ship.draw(self.surface)
@@ -53,13 +58,13 @@ class Board(ABC):
 
     def random_initialize(self):
         self.clear()
-        for ship_length in self.ship_sizes:
+        for ship_type in self.ship_type_list:
             ship_added = False
             while not ship_added:
                 x = random.randint(0, self.size - 1)
                 y = random.randint(0, self.size - 1)
                 ship_direction = random.randint(0,3)
-                ship = Ship(x, y, ship_direction, ship_length, self.cell_size)
+                ship = Ship(x, y, ship_direction, ship_type, self.cell_size)
                 if self.is_valid(ship):
                     self.add_ship(ship)
                     ship_added = True
@@ -148,9 +153,11 @@ class Board(ABC):
     def gameover(self):
         """Checks to see if all the ships have been fully hit"""
         for ship in self.ships_list:
-            for coordinate in ship.coordinate_list:
-                if coordinate not in self.hits_list:
-                    return False
+            if ship.active:
+                for coordinate in ship.coordinate_list:
+                    if coordinate not in self.hits_list:
+                        return False
+                    ship.destroy()
         return True
 
 class PlayerBoard(Board):
@@ -162,8 +169,24 @@ class PlayerBoard(Board):
 
         
 
-    def populate(self, screen):
-        direction = Ship.directions["NORTH"]
+    def populate(self, screen, menu_surface, menu_position):
+        populate_menu_theme = pygame_menu.themes.Theme(
+                            surface_clear_color=(173, 200, 216),
+                            title_bar_style=pygame_menu.widgets.MENUBAR_STYLE_SIMPLE,
+                            widget_font=pygame_menu.font.FONT_OPEN_SANS_BOLD,
+                            widget_font_color=(0,0,0)
+        )
+
+        populate_menu = pygame_menu.Menu(menu_surface.get_height(),
+                                        menu_surface.get_width(), 
+                                        "Populate Menu",
+                                        theme=populate_menu_theme)
+
+        populate_menu.add_label("Place your ships\nClick on empty cell to start")
+        populate_menu.add_button("Shuffle", self.random_initialize)
+        populate_menu.mainloop(menu_surface, disable_loop=True)
+        screen.blit(menu_surface, menu_position)
+        direction = directions["NORTH"]
         while True:
             self.draw(screen)
 
@@ -187,19 +210,16 @@ class PlayerBoard(Board):
                 else:
                     break
 
-                # if self.is_valid(ship):
-                #     self.add_ship(ship)
-
             pygame.display.flip()
             pygame.time.Clock().tick(60)
 
     
     @property
     def ship_to_place(self):
-        """Returns a ship length that needs to be placed, if any"""
-        placed_sizes = sorted(ship.length for ship in self.ships_list)
-        sizes = sorted(self.ship_sizes)
-        for placed, to_place in zip_longest(placed_sizes, sizes):
+        """Returns a ship type that needs to be placed, if any"""
+        placed = sorted(ship.type for ship in self.ships_list)
+        total = sorted(self.ship_type_list)
+        for placed, to_place in zip_longest(placed, total):
             if placed != to_place:
                 return to_place
         return None

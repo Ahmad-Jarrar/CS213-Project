@@ -66,7 +66,31 @@ class Ripple(Animation):
         1: pygame.image.load("./Resources/Images/ripple/2.png"),
         2: pygame.image.load("./Resources/Images/ripple/3.png"),
         3: pygame.image.load("./Resources/Images/ripple/4.png"),
-        4: pygame.image.load("./Resources/Images/ripple/5.png")
+        4: pygame.image.load("./Resources/Images/ripple/5.png"),
+        5: pygame.image.load("./Resources/Images/ripple/6.png"),
+        6: pygame.image.load("./Resources/Images/ripple/7.png"),
+        7: pygame.image.load("./Resources/Images/ripple/8.png"),
+        8: pygame.image.load("./Resources/Images/ripple/9.png"),
+        9: pygame.image.load("./Resources/Images/ripple/10.png"),
+        10: pygame.image.load("./Resources/Images/ripple/11.png")
     }
     def __init__(self, rectange):
-        super().__init__(self.frames, rectange, 50)
+        super().__init__(self.frames, rectange, 30)
+
+class Background(Animation):
+    frames = {
+        0: pygame.image.load("./Resources/Images/water/1.png"),
+        1: pygame.image.load("./Resources/Images/water/2.png"),
+        2: pygame.image.load("./Resources/Images/water/3.png"),
+        3: pygame.image.load("./Resources/Images/water/4.png"),
+        4: pygame.image.load("./Resources/Images/water/5.png"),
+        5: pygame.image.load("./Resources/Images/water/6.png"),
+        6: pygame.image.load("./Resources/Images/water/7.png"),
+        7: pygame.image.load("./Resources/Images/water/8.png"),
+        8: pygame.image.load("./Resources/Images/water/9.png"),
+        9: pygame.image.load("./Resources/Images/water/10.png"),
+        10: pygame.image.load("./Resources/Images/water/11.png"),
+        11: pygame.image.load("./Resources/Images/water/12.png")
+    }
+    def __init__(self, rectange):
+        super().__init__(self.frames, rectange, 4)

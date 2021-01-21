@@ -1,25 +1,25 @@
 import pygame
 import pygame_menu
-import random
 from Board import PlayerBoard, AIBoard
-from animations import Explosion, Ripple
+from animations import Explosion, Ripple, Background
 from AI.AImove import aiTurn
 
 class Game():
     
-    def __init__(self, board_size=8, cell_size=40, margin=20, border_size=0.3, ship_sizes=[4, 3, 3, 2, 2, 2]):
+    def __init__(self, board_size=8, cell_size=50, margin=20, border_size=0.3, ship_types=["Carrier", "Battleship", "Cruiser", "Submarine", "Destroyer"]):
         pygame.init()
+        pygame.mixer.init()
         self.previous_win = False
         self.replay = False
         self.board_size = board_size
         self.cell_size = cell_size
         self.margin = margin
         self.border_size = border_size
-        self.ship_sizes = ship_sizes
+        self.ship_types_list = ship_types
         self.subwindow_positions = {
-            "AI Board": [self.margin, self.margin],
-            "Player Board": [2*self.margin + board_size*cell_size, self.margin],
-            "Menu": [self.margin, 2*self.margin + board_size*cell_size]
+            "AI Board": [self.margin, self.margin + 50],
+            "Player Board": [2*self.margin + board_size*cell_size, self.margin + 50],
+            "Menu": [self.margin, 2*self.margin + board_size*cell_size + 50]
         }
 
 
@@ -36,10 +36,10 @@ class Game():
 
         )
 
+        self.heading_font = pygame.font.Font('freesansbold.ttf', 24)
 
 
-
-        self.window_size = [2 * board_size * cell_size + 3*margin, board_size * cell_size + 2*margin + 200]
+        self.window_size = [2 * board_size * cell_size + 3*margin, board_size * cell_size + 2*margin + 250]
         self.screen = pygame.display.set_mode(self.window_size)
         print(self.window_size)
         pygame.display.set_caption("Battleships")
@@ -48,14 +48,14 @@ class Game():
         self.inline_menu_surface = pygame.Surface((self.window_size[0] - 2*self.margin, 200 - self.margin))
 
 
+
     def start(self):
         main_menu = self.main_menu()
         main_menu.mainloop(self.screen, fps_limit=30)
             
     def main_menu(self):
         menu = pygame_menu.Menu(self.window_size[1], self.window_size[0], 
-                                    "",
-                                    theme=self.menu_theme)
+                                    "", theme=self.menu_theme)
         menu.add_button('Play', self.play)
         menu.add_button('Quit', pygame_menu.events.EXIT)
         return menu
@@ -64,31 +64,34 @@ class Game():
 
     def play(self):
         self.aiTurn = aiTurn(self.board_size)
-        self.screen.fill(pygame.Color(236,240,241))
-        self.pboard = PlayerBoard(self.board_size, self.ship_sizes, 
+        self.screen.fill(pygame.Color((91, 196, 209)))
+        
+        pboard_heading = self.heading_font.render("Player board", True, pygame.Color("black"))
+        pboard_heading_rect = pboard_heading.get_rect()
+        pboard_heading_rect.center = (self.subwindow_positions["Player Board"][0]+ self.board_size/2 * self.cell_size, 40)
+        self.screen.blit(pboard_heading, pboard_heading_rect)
+
+        self.pboard = PlayerBoard(self.board_size, self.ship_types_list, 
                                     self.cell_size, self.border_size, 
                                     self.subwindow_positions["Player Board"])
 
         
-        populate_menu = pygame_menu.Menu(self.inline_menu_surface.get_height(),
-                                        self.inline_menu_surface.get_width(), 
-                                        "",
-                                        theme=self.menu_theme)
+        self.pboard.populate(self.screen, self.inline_menu_surface, self.subwindow_positions["Menu"])
 
-        populate_menu.add_label("Place your ships\nClick on empty cell to start")
-        populate_menu.add_button("Shuffle", self.pboard.random_initialize)
-        populate_menu.mainloop(self.inline_menu_surface, disable_loop=True)
-        self.screen.blit(self.inline_menu_surface, self.subwindow_positions["Menu"])
-        self.pboard.populate(self.screen)
+        ai_heading = self.heading_font.render("Enemy board", True, pygame.Color("black"))
+        ai_heading_rect = ai_heading.get_rect()
+        ai_heading_rect.center = (self.subwindow_positions["AI Board"][0]+ self.board_size/2 * self.cell_size, 40)
         
-        self.aiboard = AIBoard(self.board_size, self.ship_sizes, 
+        self.aiboard = AIBoard(self.board_size, self.ship_types_list, 
                                     self.cell_size, self.border_size, 
                                     self.subwindow_positions["AI Board"])
         
         while not self.game_over:
             if self.player_turn():
                 self.ai_turn()
-            self.screen.fill(pygame.Color(236,240,241))
+            self.screen.fill(pygame.Color((91, 196, 209)))
+            self.screen.blit(ai_heading, ai_heading_rect)
+            self.screen.blit(pboard_heading, pboard_heading_rect)
             self.aiboard.draw(self.screen)
             self.pboard.draw(self.screen)
             

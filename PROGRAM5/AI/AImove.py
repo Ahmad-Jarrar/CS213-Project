@@ -14,7 +14,7 @@ class aiTurn():
         self.ai_miss_after_hit_count = 0
         self.ai_hit_direction = ''
         self.attack_mode = 'r'
-        self.ai_init_hit = (,)    
+        self.ai_init_hit = ()
 
     def randomAttack(self,playerBoard):
         x,y = -1,-1    
