@@ -2,7 +2,7 @@ import pygame
 import pygame_menu
 from Board import PlayerBoard, AIBoard
 from animations import Explosion, Ripple
-from AI.AImove import aiTurn
+from AI.AImove import AI
 
 class Game():
     
@@ -22,7 +22,7 @@ class Game():
             "Player Board": [2*self.margin + board_size*cell_size, self.margin + 50],
         }
 
-        self.heading_font = pygame.font.Font('Resources\Fonts\Bebas-Regular.ttf', 24)
+        self.heading_font = pygame.font.Font('./Resources/Fonts/Bebas-Regular.ttf', 24)
         self.text_color = pygame.Color(91, 196, 209)
 
         self.window_size = [2 * board_size * cell_size + 3*margin, board_size * cell_size + 2*margin + 50]
@@ -83,7 +83,7 @@ class Game():
         return menu
 
     def play(self):
-        self.aiTurn = aiTurn(self.board_size)
+        self.ai = AI(self.board_size)
         self.screen.fill(pygame.Color(33, 119, 148))
         
         pboard_heading = self.heading_font.render("Player board", True, self.text_color)
@@ -140,7 +140,7 @@ class Game():
                 score_surface.set_alpha(200)
                 score_surface.fill(pygame.Color(33, 119, 148))
                 
-                font = pygame.font.Font('Resources\Fonts\Bebas-Regular.ttf', 60)
+                font = pygame.font.Font('./Resources/Fonts/Bebas-Regular.ttf', 60)
 
                 if self.win:
                     score = font.render("You Win!", True, self.text_color)
@@ -180,7 +180,7 @@ class Game():
     def ai_turn(self):
         """Uses input to decide if a shot is valid or not"""
         x, y = -1, -1
-        x,y = self.aiTurn.getLoc(self.pboard)
+        x,y = self.ai.getLoc(self.pboard)
         
         if self.pboard.valid_target(x, y):
             result = self.pboard.shoot(x, y)
@@ -189,16 +189,17 @@ class Game():
                 Explosion(pygame.Rect(self.subwindow_positions["Player Board"][0] + x * self.cell_size,
                                       self.subwindow_positions["Player Board"][1] + y * self.cell_size,
                                       self.cell_size, self.cell_size)).play(self.screen)
-                if self.aiTurn.ai_hit_count == 0 or self.aiTurn.ai_hit_count == 1:
-                            self.aiTurn.ai_hit_count+=1
-                            self.aiTurn.attack_mode = 'd'                   
+                if self.ai.ai_hit_count == 0 or self.ai.ai_hit_count == 1:
+                            self.ai.ai_hit_count+=1
+                            self.ai.attack_mode = 'd'                   
 
             elif result == 1:
                 Ripple(pygame.Rect(self.subwindow_positions["Player Board"][0] + x * self.cell_size,
                                       self.subwindow_positions["Player Board"][1] + y * self.cell_size,
                                       self.cell_size, self.cell_size)).play(self.screen)
-                if self.aiTurn.ai_hit_count == 2 and self.aiTurn.ai_miss_after_hit_count < 2:
-                    self.aiTurn.ai_miss_after_hit_count+=1                      
+                if self.ai.ai_hit_count == 2 and self.ai.ai_miss_after_hit_count < 2:
+                    print("increasing miss count in game")
+                    self.ai.ai_miss_after_hit_count+=1                      
             return True
         else:
             return False

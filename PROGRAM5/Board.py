@@ -185,7 +185,7 @@ class PlayerBoard(Board):
     def populate(self, screen, text_area):
         text_area_surface = pygame.Surface((self.size * self.cell_size, self.size * self.cell_size))
         text_area_rect = pygame.Rect(text_area[0], text_area[1], self.size * self.cell_size, self.size * self.cell_size)
-        font = pygame.font.Font('Resources\Fonts\Bebas-Regular.ttf', 24)
+        font = pygame.font.Font('./Resources/Fonts/Bebas-Regular.ttf', 24)
         text_color = pygame.Color(91, 196, 209)
 
         direction = directions["NORTH"]
