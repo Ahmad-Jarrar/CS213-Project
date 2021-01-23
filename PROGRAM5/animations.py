@@ -1,16 +1,20 @@
 import pygame
 
+pygame.mixer.init()
 class Animation():
-    def __init__(self, frames, rectange, speed):
+    def __init__(self, frames, rectange, speed, sound = None):
         self.frames = frames
         self.current_frame = 0
         self.rect = rectange
         self.speed = speed
+        self.sound = sound
         self.ticks = 0
         for i in self.frames.keys():
             self.frames[i] = pygame.transform.scale(self.frames[i], self.rect.size)
 
     def play(self,screen):
+        if self.sound != None:
+            self.sound.play()
         for i in range(len(self.frames.keys())):
             screen.blit(self.frames[i], self.rect)
             pygame.display.update()
@@ -41,8 +45,9 @@ class Explosion(Animation):
         4: pygame.image.load("./Resources/Images/explosion/blowup5.png"),
         5: pygame.image.load("./Resources/Images/explosion/blowup6.png")
     }
+    sound = pygame.mixer.Sound("./Resources/Sounds/explosion.wav")
     def __init__(self, rectange):
-        super().__init__(self.frames, rectange, 30)
+        super().__init__(self.frames, rectange, 30, self.sound)
 
 
 class Smoke(Animation):
@@ -74,8 +79,9 @@ class Ripple(Animation):
         9: pygame.image.load("./Resources/Images/ripple/10.png"),
         10: pygame.image.load("./Resources/Images/ripple/11.png")
     }
+    sound = pygame.mixer.Sound("./Resources/Sounds/splash.wav")
     def __init__(self, rectange):
-        super().__init__(self.frames, rectange, 30)
+        super().__init__(self.frames, rectange, 30, self.sound)
 
 class Background(Animation):
     frames = {

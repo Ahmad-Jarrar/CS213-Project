@@ -1,7 +1,7 @@
 import pygame
 
 pygame.mixer.init()
-ship_destruction_sound = pygame.mixer.Sound("./Resources/Sounds/explosion.wav")
+ship_destruction_sound = pygame.mixer.Sound("./Resources/Sounds/collapse.wav")
 
 ship_images_active = {
     "Destroyer": pygame.image.load("./Resources/Images/ships/2.png"),
@@ -12,11 +12,11 @@ ship_images_active = {
 }
 
 ship_images_destroyed = {
-    "Destroyer": pygame.image.load("./Resources/Images/ships/2.png"),
-    "Submarine": pygame.image.load("./Resources/Images/ships/3s.png"),
-    "Cruiser": pygame.image.load("./Resources/Images/ships/3c.png"),
-    "Battleship": pygame.image.load("./Resources/Images/ships/5.png"),
-    "Carrier": pygame.image.load("./Resources/Images/ships/4.png")
+    "Destroyer": pygame.image.load("./Resources/Images/burnt_ships/2.png"),
+    "Submarine": pygame.image.load("./Resources/Images/burnt_ships/3s.png"),
+    "Cruiser": pygame.image.load("./Resources/Images/burnt_ships/3c.png"),
+    "Battleship": pygame.image.load("./Resources/Images/burnt_ships/5.png"),
+    "Carrier": pygame.image.load("./Resources/Images/burnt_ships/4.png")
 }
 
 ship_sizes = {
@@ -35,9 +35,6 @@ directions = {
 
 class Ship:
     """An object to store the data of one ship"""
-    
-
-    
 
     def __init__(self, x, y, d, type, cell_size):
         self.location = (x, y)
@@ -53,7 +50,6 @@ class Ship:
         self.image = pygame.transform.rotate(self.image, self.direction * 90)
 
     def destroy(self):
-
         ship_destruction_sound.play()
         self.active = False
         self.assign_image(ship_images_destroyed[self.type])

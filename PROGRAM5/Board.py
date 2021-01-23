@@ -1,5 +1,4 @@
 import pygame
-import pygame_menu
 import random
 from abc import ABC
 from itertools import zip_longest
@@ -27,15 +26,19 @@ class Board(ABC):
         self.background.play_frame(self.surface)
         for y in range(self.size):
             for x in range(self.size):
-                pygame.draw.line(self.surface, pygame.Color((91, 196, 209)),
+                pygame.draw.line(self.surface, pygame.Color(91, 196, 209),
                                  ((x) * self.cell_size,(y+1) * self.cell_size),
                                  ((x+1) * self.cell_size,(y+1) * self.cell_size), width=1)
 
-                pygame.draw.line(self.surface, pygame.Color((91, 196, 209)),
+                pygame.draw.line(self.surface, pygame.Color(91, 196, 209),
                                  ((x+1) * self.cell_size,(y) * self.cell_size),
                                  ((x+1) * self.cell_size,(y+1) * self.cell_size), width=1)
 
-        if not self.ships_hidden:
+        if self.ships_hidden:
+            for ship in self.ships_list:
+                if not ship.active:
+                    ship.draw(self.surface)
+        else:
             for ship in self.ships_list:
                 ship.draw(self.surface)
 
@@ -147,18 +150,28 @@ class Board(ABC):
                     y = (y - self.rect.y) // self.cell_size
                     if x in range(self.size) and y in range(self.size):
                         return x, y, event.button
+            elif event.type == pygame.KEYUP and event.key == pygame.K_r:
+                return None, None, -1
+            elif event.type == pygame.KEYUP and event.key == pygame.K_ESCAPE:
+                return None, None, -2
         return None, None, None
 
     @property
     def gameover(self):
         """Checks to see if all the ships have been fully hit"""
+        over = True
         for ship in self.ships_list:
             if ship.active:
+                completely_destroyed = True
                 for coordinate in ship.coordinate_list:
                     if coordinate not in self.hits_list:
-                        return False
+                        completely_destroyed = False
+                        break
+                if completely_destroyed:
                     ship.destroy()
-        return True
+                else:
+                    over = False
+        return over
 
 class PlayerBoard(Board):
     """A Board for user input"""
@@ -169,28 +182,38 @@ class PlayerBoard(Board):
 
         
 
-    def populate(self, screen, menu_surface, menu_position):
-        populate_menu_theme = pygame_menu.themes.Theme(
-                            surface_clear_color=(173, 200, 216),
-                            title_bar_style=pygame_menu.widgets.MENUBAR_STYLE_SIMPLE,
-                            widget_font=pygame_menu.font.FONT_OPEN_SANS_BOLD,
-                            widget_font_color=(0,0,0)
-        )
+    def populate(self, screen, text_area):
+        text_area_surface = pygame.Surface((self.size * self.cell_size, self.size * self.cell_size))
+        text_area_rect = pygame.Rect(text_area[0], text_area[1], self.size * self.cell_size, self.size * self.cell_size)
+        font = pygame.font.Font('Resources\Fonts\Bebas-Regular.ttf', 24)
+        text_color = pygame.Color(91, 196, 209)
 
-        populate_menu = pygame_menu.Menu(menu_surface.get_height(),
-                                        menu_surface.get_width(), 
-                                        "Populate Menu",
-                                        theme=populate_menu_theme)
-
-        populate_menu.add_label("Place your ships\nClick on empty cell to start")
-        populate_menu.add_button("Shuffle", self.random_initialize)
-        populate_menu.mainloop(menu_surface, disable_loop=True)
-        screen.blit(menu_surface, menu_position)
         direction = directions["NORTH"]
         while True:
             self.draw(screen)
 
+            text_area_surface.fill(pygame.Color(33, 119, 148))
+            if self.ship_to_place:
+                text = font.render("Place: " + self.ship_to_place + " length: " + str(ship_sizes[self.ship_to_place]), 
+                                    True, text_color)
+                text_rect = text.get_rect()
+                text_rect.center = (self.size*self.cell_size/2, self.size*self.cell_size/2)
+                text_area_surface.blit(text, text_rect)
+            
+            else:
+                text = font.render("Click on empty cell to continue", 
+                                    True, text_color)
+                text_rect = text.get_rect()
+                text_rect.center = (self.size*self.cell_size/2, self.size*self.cell_size/2)
+                text_area_surface.blit(text, text_rect)
+
+            screen.blit(text_area_surface, text_area_rect)
+
             x, y, button = self.get_coordinates()
+
+            if button == -1:
+                self.random_initialize()
+
             if x is not None and y is not None:
                 ship = self.get_ship(x, y)
                 if ship:
@@ -212,7 +235,6 @@ class PlayerBoard(Board):
 
             pygame.display.flip()
             pygame.time.Clock().tick(60)
-
     
     @property
     def ship_to_place(self):
@@ -227,7 +249,6 @@ class PlayerBoard(Board):
 
 class AIBoard(Board):
     """A Board controlled by a AI"""
-
     def __init__(self, board_size, ship_sizes, cell_size, border_size, position):
         """Initialises the board by randomly placing ships"""
         super().__init__(board_size, ship_sizes, cell_size, border_size, position)
