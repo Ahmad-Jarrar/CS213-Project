@@ -10,7 +10,6 @@ class AI():
         self.sunk_list = [(-1,-1)]
 
     def switchToRandom(self):
-        print("switching to random")
         self.ai_hit_count = 0
         self.ai_miss_after_hit_count = 0
         self.ai_hit_direction = ''
@@ -224,12 +223,6 @@ class AI():
                 x,y = self.randomAttack(playerBoard)
 
         
-        print("attack mode: " + self.attack_mode)
-        print("hit count: " + str(self.ai_hit_count))
-        print("miss after hit count: " + str(self.ai_miss_after_hit_count))
-        print("initial hit: " + str(self.ai_init_hit))
-        print(self.sunk_list)
-        print(x,y)
         return x,y
 
 

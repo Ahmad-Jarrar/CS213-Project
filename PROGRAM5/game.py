@@ -2,7 +2,7 @@ import pygame
 import pygame_menu
 from Board import PlayerBoard, AIBoard
 from animations import Explosion, Ripple
-from AI.AImove import AI
+from AI.AI import AI
 
 class Game():
     
@@ -198,7 +198,6 @@ class Game():
                                       self.subwindow_positions["Player Board"][1] + y * self.cell_size,
                                       self.cell_size, self.cell_size)).play(self.screen)
                 if self.ai.ai_hit_count == 2 and self.ai.ai_miss_after_hit_count < 2:
-                    print("increasing miss count in game")
                     self.ai.ai_miss_after_hit_count+=1                      
             return True
         else:
