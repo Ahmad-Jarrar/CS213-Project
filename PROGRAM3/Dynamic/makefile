@@ -1,14 +1,16 @@
 CXX      := g++
 CXXFLAGS := -std=c++17 -Wall -I. -O3
 
-DEP_DIR  := ..
+DEP1_DIR := ..
+DEP2_DIR := ../../PROGRAM2/Optimized
 SRC_DIR  := .
 TARGET   := dynamic
 
-DEP      := $(addprefix $(DEP_DIR)/, common.cpp)
+DEP1     := $(addprefix $(DEP1_DIR)/, common.cpp)
+DEP2     := $(addprefix $(DEP2_DIR)/, subseq.cpp)
 SRC      := $(addprefix $(SRC_DIR)/, $(TARGET).cpp)
 
-$(TARGET): $(SRC) $(DEP)
+$(TARGET): $(SRC) $(DEP1) $(DEP2)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 	@echo "\nSuccessful! Enter ./$(TARGET) to run.\n"
 
