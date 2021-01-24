@@ -14,9 +14,8 @@ using namespace boost::numeric::ublas;
 int main()
 {
     int dim1[2], dim2[2];
-
+    // Input valid Matrices
     input(dim1, dim2);
-
     while (dim1[1] != dim2[0])
     {
         std::cout << "Dimensions Invalid! Matrices cannot be multiplied\n";
@@ -34,6 +33,7 @@ int main()
     // print_matrix(A);
     // print_matrix(B);
 
+    // Test Standard Multiplication method in boost library
     auto start = std::chrono::high_resolution_clock::now();
     C = prod(A, B);
     auto stop = std::chrono::high_resolution_clock::now();

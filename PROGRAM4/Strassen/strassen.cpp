@@ -1,3 +1,11 @@
+/*
+    This code was taken from 
+    https://github.com/dmonaldo/strassen-matrix-multiplication/blob/master/main.cpp
+    and modified to use ublas matrics as input
+    and to test the performance a driver code consistent
+    with approaches was added.
+*/
+
 #include <chrono>
 
 #include "../common.hpp"

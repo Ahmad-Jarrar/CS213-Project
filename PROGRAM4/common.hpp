@@ -7,7 +7,7 @@
 #include <boost/numeric/ublas/operation_blocked.hpp>
 
 /*
-    Takes input for dimentsions of matrix
+    Takes input for dimensions of matrix
 */
 void input (int* dim1, int* dim2) {
     std::cout << "Enter rows of matrix 1:";
