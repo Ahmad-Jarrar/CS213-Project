@@ -1,5 +1,5 @@
 #include <chrono>
-
+#include <thread>
 #include "../common.hpp"
 
 using namespace boost::numeric::ublas;
@@ -58,6 +58,36 @@ matrix<int> matmul_naive_optimized (matrix<int> m, matrix<int> n) {
     return mn;
 }
 
+void multiply_slice(matrix<int> mn, matrix<int> m, matrix<int> n, int i) {
+    for (size_t k = 0; k < m.size2(); k++)
+        for (size_t j = 0; j < n.size2(); j++)
+            mn(i,j) += m(i,k) * n(k,j);
+}
+
+matrix<int> matmul_naive_optimized_threaded (matrix<int> m, matrix<int> n) {
+
+    if (m.size2() != n.size1()) {
+        perror("m.size2() != n.size1()\n");
+        perror("Cannot multiply!");
+        exit(1);
+    }
+    matrix<int> mn(m.size1(), n.size2());
+
+    // No need. Matrix is automatically initialized to zero
+    // initialize_matrix(mn, false, 0);
+    std::thread threads[m.size1()];
+    for (size_t i = 0; i < m.size1(); i++)
+    {
+        threads[i] = std::thread(multiply_slice, mn, m, n, i);
+    }
+
+    for (size_t i = 0; i < m.size1(); i++)
+    {
+        threads[i].join();
+    }
+    return mn;
+}
+
 int main()
 {
     int dim1[2], dim2[2];
@@ -97,6 +127,14 @@ int main()
     duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start); 
 
     std::cout << "Time taken Naive Optimized(microseconds): " << duration.count() << std::endl;
+
+    start = std::chrono::high_resolution_clock::now();
+    C = matmul_naive_optimized_threaded(A, B);
+    stop = std::chrono::high_resolution_clock::now();
+
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start); 
+
+    std::cout << "Time taken Naive Optimized Threaded(microseconds): " << duration.count() << std::endl;
 
     // Print product
     // print_matrix(C);
