@@ -135,7 +135,7 @@ int main()
                 elapsed_seconds = end - start;
                 cout << endl << "String: " << newText << endl;
                 cout << "Elapsed time for Naive: " << 
-                        elapsed_seconds.count() * 1000000 << " ms" << endl;
+                        elapsed_seconds.count() * 1000 << " ms" << endl;
                 break;
 
             case(-1):

@@ -196,8 +196,8 @@ int main()
                 // prints time and output
                 elapsed_seconds = end - start;
                 cout << endl << "Converted String: " << newText << endl;
-                cout << "Elapsed time for our algorithm: " << 
-                        elapsed_seconds.count() * 1000000 << " ms" << endl;
+                cout << "Elapsed time for Optimized: " << 
+                        elapsed_seconds.count() * 1000 << " ms" << endl;
                 break;
 
             case(-1):
