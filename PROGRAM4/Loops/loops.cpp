@@ -7,7 +7,7 @@ using namespace boost::numeric::ublas;
 /*
     Simple matrix multiplication using loops
 */
-matrix<int> matmul_loops (matrix<int> m, matrix<int> n) {
+matrix<int> matmul_loops (matrix<int> &m, matrix<int> &n) {
 
     if (m.size2() != n.size1()) {
         perror("m.size2() != n.size1()\n");
@@ -32,7 +32,7 @@ matrix<int> matmul_loops (matrix<int> m, matrix<int> n) {
     reduces page swaps increasing performance significantly.
 */
 // ideas from https://gist.github.com/nadavrot/5b35d44e8ba3dd718e595e40184d03f0
-matrix<int> matmul_loops_optimized (matrix<int> m, matrix<int> n) 
+matrix<int> matmul_loops_optimized (matrix<int> &m, matrix<int> &n) 
 {   
     // Check if the dimensions match and the matrices can be multiplied
     if (m.size2() != n.size1()) {
@@ -55,7 +55,7 @@ matrix<int> matmul_loops_optimized (matrix<int> m, matrix<int> n)
 /*
     Calculate one row of resultant matrix
 */
-void multiply_slice(matrix<int> &mn, matrix<int> m, matrix<int> n, int i) 
+void multiply_slice(matrix<int> &mn, matrix<int> &m, matrix<int> &n, int i) 
 {
     for (size_t k = 0; k < m.size2(); k++)
         for (size_t j = 0; j < n.size2(); j++)
@@ -67,7 +67,7 @@ void multiply_slice(matrix<int> &mn, matrix<int> m, matrix<int> n, int i)
     
     Calculations are performed in parallel for every row of first matrix (and Resultant matrix)
 */
-matrix<int> matmul_loops_optimized_threaded (matrix<int> m, matrix<int> n) 
+matrix<int> matmul_loops_optimized_threaded (matrix<int> &m, matrix<int> &n) 
 {
     // Check if the dimensions match and the matrices can be multiplied
     if (m.size2() != n.size1()) {
@@ -83,7 +83,7 @@ matrix<int> matmul_loops_optimized_threaded (matrix<int> m, matrix<int> n)
     // Assign each row to new thread
     std::thread threads[m.size1()];
     for (size_t i = 0; i < m.size1(); i++)
-        threads[i] = std::thread(multiply_slice, std::ref(mn), m, n, i);
+        threads[i] = std::thread(multiply_slice, std::ref(mn), std::ref(m), std::ref(n), i);
 
     // Join threads
     for (size_t i = 0; i < m.size1(); i++)
