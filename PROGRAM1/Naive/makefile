@@ -1,5 +1,5 @@
 CXX      := g++
-CXXFLAGS := -std=c++17 -Wall -I. -O3
+CXXFLAGS := -std=c++17 -Wall -I.
 
 DEP_DIR  := ..
 SRC_DIR  := .
