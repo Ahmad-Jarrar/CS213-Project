@@ -2,6 +2,7 @@ import pygame
 
 pygame.mixer.init()
 class Animation():
+    """Animation base class to run 2 types of animations (per frame and continous)"""
     def __init__(self, frames, rectange, speed, sound = None):
         self.frames = frames
         self.current_frame = 0
@@ -13,6 +14,7 @@ class Animation():
             self.frames[i] = pygame.transform.scale(self.frames[i], self.rect.size)
 
     def play(self,screen):
+        """Play entire animation sequence once"""
         if self.sound != None:
             self.sound.play()
         for i in range(len(self.frames.keys())):
@@ -21,13 +23,16 @@ class Animation():
             pygame.time.Clock().tick(self.speed)
 
     def show_current_frame(self, screen):
+        """Display current frame (internal use in slow animation)"""
         screen.blit(self.frames[self.current_frame], self.rect)
 
     def show_next_frame(self, screen):
+        """Display next frame (internal use in slow animation)"""
         screen.blit(self.frames[self.current_frame], self.rect)
         self.current_frame = (self.current_frame + 1) % len(self.frames.keys())
     
     def play_frame(self, screen):
+        """Display one frame in slow animation"""
         if self.ticks <= self.speed:
             self.show_current_frame(screen)
             self.ticks += 1

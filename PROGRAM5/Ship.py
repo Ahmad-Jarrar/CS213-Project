@@ -44,12 +44,14 @@ class Ship:
         self.cell_size = cell_size
         self.active = True
         self.assign_image(ship_images_active[type])
-        
+
+    # Used to assign different picture at runtime 
     def assign_image(self, image):
         self.image = pygame.transform.scale(image, (self.cell_size, self.length * self.cell_size))
         self.image = pygame.transform.rotate(self.image, self.direction * 90)
 
     def destroy(self):
+        """Marks ship as destroyed, play dedstruction sound"""
         ship_destruction_sound.play()
         self.active = False
         self.assign_image(ship_images_destroyed[self.type])
@@ -90,12 +92,9 @@ class Ship:
         self.direction = (self.direction + 1) % 4
         self.image = pygame.transform.rotate(self.image, 90)
 
-    def __repr__(self):
-        """A nice representation of the Ship object, for debugging"""
-        return "<Ship Object: ({},{}), {}, Length {}>".format(
-            *self.location, self.direction, self.length)
 
     def draw(self, screen):
+        """Draws the ship on given surface"""
         pos = self.starting_position
         size = self.size
         screen.blit(self.image, pygame.Rect([pos[0], pos[1], size[0], size[1]]))

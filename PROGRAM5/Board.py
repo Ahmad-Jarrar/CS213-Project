@@ -23,7 +23,10 @@ class Board(ABC):
         self.background = Background(self.surface.get_rect())
 
     def draw(self, screen):
+        """Draw the board on given surface"""
+        # Background animation
         self.background.play_frame(self.surface)
+        # Grid Lines
         for y in range(self.size):
             for x in range(self.size):
                 pygame.draw.line(self.surface, pygame.Color(91, 196, 209),
@@ -33,7 +36,7 @@ class Board(ABC):
                 pygame.draw.line(self.surface, pygame.Color(91, 196, 209),
                                  ((x+1) * self.cell_size,(y) * self.cell_size),
                                  ((x+1) * self.cell_size,(y+1) * self.cell_size), width=1)
-
+        # Ships
         if self.ships_hidden:
             for ship in self.ships_list:
                 if not ship.active:
@@ -42,24 +45,29 @@ class Board(ABC):
             for ship in self.ships_list:
                 ship.draw(self.surface)
 
+        # Miss dots
         for x,y in self.misses_list:
             pygame.draw.circle(self.surface, pygame.Color((8, 73, 119)), 
                                       [(x+0.5) * self.cell_size + self.border_size,
                                       (y+0.5) * self.cell_size + self.border_size], 
                                       3)
-
+        #  Hit smokes
         for smoke in self.smokes:
             smoke.play_frame(self.surface)
 
+        # Display
         screen.blit(self.surface, self.rect)
 
     def clear(self):
+        """Clear all data of board"""
         self.ships_list = []
         self.hits_list = []
         self.misses_list = []
         self.smokes = []
 
+
     def random_initialize(self):
+        """Add Ships to random locations"""
         self.clear()
         for ship_type in self.ship_type_list:
             ship_added = False
@@ -139,6 +147,10 @@ class Board(ABC):
         return None
     
     def get_coordinates(self):
+        """
+        Checks for mouse input Return coordinates of clicked cell
+        and other inputs like escape, R, mouse buttons
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.display.quit()
@@ -183,6 +195,7 @@ class PlayerBoard(Board):
         
 
     def populate(self, screen, text_area):
+        """Place Ships on board according to user input"""
         text_area_surface = pygame.Surface((self.size * self.cell_size, self.size * self.cell_size))
         text_area_rect = pygame.Rect(text_area[0], text_area[1], self.size * self.cell_size, self.size * self.cell_size)
         font = pygame.font.Font('./Resources/Fonts/Bebas-Regular.ttf', 24)
@@ -192,6 +205,7 @@ class PlayerBoard(Board):
         while True:
             self.draw(screen)
 
+            # Display hints
             text_area_surface.fill(pygame.Color(33, 119, 148))
             if self.ship_to_place:
                 text = font.render("Place: " + self.ship_to_place + " length: " + str(ship_sizes[self.ship_to_place]), 
@@ -210,20 +224,23 @@ class PlayerBoard(Board):
             screen.blit(text_area_surface, text_area_rect)
 
             x, y, button = self.get_coordinates()
-
+            # Shuffle ship positions randomly
             if button == -1:
                 self.random_initialize()
 
             if x is not None and y is not None:
                 ship = self.get_ship(x, y)
                 if ship:
+                    # Remove ship
                     self.remove_ship(ship)
+                    # Rotate ship
                     if button == 3:
                         ship.rotate()
                         while not self.is_valid(ship):
                             ship.rotate()
                         self.add_ship(ship)
                 elif self.ship_to_place:
+                    # Add ship
                     if button == 1:
                         ship = Ship(x, y, direction, self.ship_to_place, self.cell_size)
                         if self.is_valid(ship):
@@ -233,6 +250,7 @@ class PlayerBoard(Board):
                 else:
                     break
 
+            # Display frame
             pygame.display.flip()
             pygame.time.Clock().tick(60)
     
