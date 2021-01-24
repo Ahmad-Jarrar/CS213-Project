@@ -1,17 +1,16 @@
-CXX=g++
-# https://richardstartin.github.io/posts/mmm-revisited
-CXXFLAGS=-std=c++17 -Wall -I. -Ofast
+CXX      := g++
+CXXFLAGS := -std=c++17 -Wall -I. -O3
 
-INC_DIR = ..
-SRC_DIR = .
+DEP_DIR  := ..
+SRC_DIR  := .
+TARGET   := Naive
 
-# DEPS := $(addprefix $(INC_DIR)/, common.hpp)
-SRC := $(addprefix $(SRC_DIR)/, prog2_naive.cpp)
+DEP      := $(addprefix $(DEP_DIR)/, common.cpp)
+SRC      := $(addprefix $(SRC_DIR)/, $(TARGET).cpp)
 
-# LIBS=-lpthread
-
-prog2_naive: $(SRC)
+$(TARGET): $(SRC) $(DEP)
 	$(CXX) $(CXXFLAGS) -o $@ $^
+	@echo "\nSuccessful! Enter ./$(TARGET) to run.\n"
 
 clean:
-	rm -f *.o prog2_naive
+	@rm -f *.o $(TARGET)
