@@ -22,7 +22,6 @@ int main()
         std::cout << "Dimensions Invalid! Matrices cannot be multiplied\n";
         input(dim1, dim2);
     }
-    
 
     matrix<int> A(dim1[0], dim1[1]);
     matrix<int> B(dim2[0],dim2[1]);
@@ -41,7 +40,8 @@ int main()
 
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start); 
 
-    std::cout << "Time taken(microseconds): " << duration.count() << std::endl;
+    std::cout << "Elapsed time for Standard Approach: " << duration.count() <<
+        " microseconds." << std::endl;
 
     // Print product
     // print_matrix(C);

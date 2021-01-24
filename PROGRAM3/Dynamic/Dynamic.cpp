@@ -96,6 +96,7 @@ int main()
         str1 = enter_str(1);
         str2 = enter_str(2);
 
+        // starts conversion along with clock
         auto start = chrono::steady_clock::now();
         convert_string(str1, str2);
         auto end = chrono::steady_clock::now();

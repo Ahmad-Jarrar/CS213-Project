@@ -1,5 +1,21 @@
 #include "../common.h"
 
+// Initializing morse code with order corresponding
+// to their english characters in ascii table
+const string asciiMorseLetters[59] = { "   ", "", "", "", "", "", 
+                                    "", "", "", "", "", "", "", "", 
+                                    "", "", "_____", ".____", "..___", 
+                                    "...__", "...._", ".....", "_....", 
+                                    "__...", "___..", "____.", "", "", 
+                                    "", "", "", "", "", "._", "_...", 
+                                    "_._.", "_..", ".", ".._.", "__.", 
+                                    "....", "..", ".___", "_._", "._..", 
+                                    "__", "_.", "___", ".__.", "__._", 
+                                    "._.", "...", "_", ".._", "..._", 
+                                    ".__", "_.._", "_.__", "__.."};
+
+// Node for tree used to convert morse code
+// to string
 class Node{
     public:
         char character;
@@ -12,9 +28,13 @@ class Node{
         }
 };
 
+// A root node with space so that unknown
+// characters get replaced with space
 Node* root = new Node(' ');
 Node* curr = root;
 
+// Creating tree hierarchy from the root, where '.' means
+// left child, and '_' means right child
 void makeTree()
 {
     root->left = new Node('e');
@@ -58,22 +78,31 @@ void makeTree()
     root->right->right->right->right->right = new Node('0');
 }
 
+// Convert from string to morse code
 string e_StrToCode(string textToChange)
 {
     string newText = "";
+
+    // get the morse code directly from asciiMorseLetters array and  
+    // append them to 'newText'
     for (unsigned int i = 0; i < textToChange.size(); i++)
         newText += asciiMorseLetters[(int)textToChange[i]-32] + " ";
     
     return newText;
 }
 
-char getCode(string str)
+// Gets the ascii character by iterating the tree hierarchy using
+// the morse code provided
+char getCharacter(string code)
 {
+    // setting current node to root node for every character
     curr = root;
-    for (int i = 0; i < str.size(); i++)
+    for (int i = 0; i < code.size(); i++)
     {
-        if(str[i]=='.')
+        // go to left child if the code is '.'
+        if(code[i] == '.')
             curr = curr->left;
+        // go to right child if the code is '_'
         else
             curr = curr->right;
     }
@@ -81,12 +110,15 @@ char getCode(string str)
     return curr->character;            
 }
 
-string e_CodeToStr(vector<string> textToChange)
+// Converts morse code to string
+string e_CodeToStr(vector<string> codeToChange)
 {
     string newText = "";
     
-    for (unsigned int i = 0; i < textToChange.size(); i++) 
-        newText += getCode(textToChange[i]);
+    // iterates over tokenized code, and appends the
+    // corresponding ascii characters to 'newText'
+    for (unsigned int i = 0; i < codeToChange.size(); i++) 
+        newText += getCharacter(codeToChange[i]);
     
     return newText;
 }
@@ -103,18 +135,21 @@ int main()
     cout << endl << "Program 1: Conversion between Morse Code & String";
     cout << endl << "Optimized Approach." << endl;
     
+    // builds tree hierarchy for conversion
+    makeTree();
+
     do
     {
+        // Prompts user for conversion type input
         cout << endl << "Enter 1 to convert String into Morse Code" << endl;
         cout << "Enter 2 to convert Morse Code into String" << endl;
         cout << "Enter -1 to exit." << endl << endl;
-
-        makeTree();
 
         cout << "Input: ";
         cin >> opt;
         cout << endl;
 
+        // if input not integer, break out of loop
         if(!cin)
             break;
 
@@ -127,13 +162,16 @@ int main()
                 cout << "Enter Text: " << endl;
                 getline(cin>>ws, textToChange);
 
+                // converts all characters to lowercase
                 transform(textToChange.begin(), textToChange.end(), 
                             textToChange.begin(), ::toupper);
 
+                // starts conversion along with clock
                 start = std::chrono::system_clock::now();
                 newText = e_StrToCode(textToChange);
                 end = std::chrono::system_clock::now(); 
 
+                // prints time and output
                 elapsed_seconds = end - start;
                 cout << endl << "Morse Code: " << newText << endl;
                 cout << "Elapsed time for Optimized: " << 
@@ -147,12 +185,15 @@ int main()
                 cout << "Enter Morse Code: " << endl;
                 getline(cin>>ws, text);
 
+                // tokenizes morse code on spaces
                 codeToChange = tokenize(text, ' ');
 
+                // starts conversion along with clock
                 start = std::chrono::system_clock::now();
                 newText = e_CodeToStr(codeToChange);
                 end = std::chrono::system_clock::now(); 
 
+                // prints time and output
                 elapsed_seconds = end - start;
                 cout << endl << "Converted String: " << newText << endl;
                 cout << "Elapsed time for our algorithm: " << 

@@ -1,16 +1,17 @@
-CXX=g++
-CXXFLAGS=-std=c++17 -Wall -I. -Ofast
+CXX      := g++
+CXXFLAGS := -std=c++17 -Wall -I. -Ofast
 
-INC_DIR = ..
-SRC_DIR = .
+INC_DIR  := ..
+SRC_DIR  := .
+TARGET   := strassen
 
-DEPS := $(addprefix $(INC_DIR)/, common.hpp)
-SRC := $(addprefix $(SRC_DIR)/, multiply.cpp)
+DEPS     := $(addprefix $(INC_DIR)/, common.hpp)
+SRC      := $(addprefix $(SRC_DIR)/, $(TARGET).cpp)
 
-# LIBS=-lpthread
 
-multiply: $(SRC) $(DEPS) 
+$(TARGET): $(SRC) $(DEPS) 
 	$(CXX) $(CXXFLAGS) -o $@ $^
+	@echo "\nSuccessful! Enter ./$(TARGET) to run.\n"
 
 clean:
-	rm -f *.o multiply
+	@rm -f *.o $(TARGET)

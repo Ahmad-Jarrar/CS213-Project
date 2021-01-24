@@ -3,14 +3,19 @@
 
 string longest_common_substr(string str1, string str2)
 {
+    // string to store common substring
     string ans;
+
+    // bool to indicate if substring found
     bool flg = false;
 
+    // iterate through str1 twice
     for (int i = 0; i < str1.length(); i++)
     {
         for (int j = i; j < str1.length(); j++)
         {
 		    // substring of str1 of length (j-i+1)
+            // starting from index i
             string x = str1.substr(i, j - i + 1);
             int t = 0;
             for (int k = 0; k < str2.length(); k++)
@@ -19,7 +24,6 @@ string longest_common_substr(string str1, string str2)
 				// that of other string
                 if(str2[k] == x[t])
                     t++;
-				// if substring found
                 else if(t == x.length())
                     break;
                 else
@@ -37,10 +41,11 @@ string longest_common_substr(string str1, string str2)
         }
     }
 
+    // if substring is found, return it
     if (flg)
         return ans;
 
-    // if no common substring found
+    // if no common substring found, return "-1"
     else
         return "-1";
 }

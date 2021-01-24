@@ -3,7 +3,7 @@ CXXFLAGS := -std=c++17 -Wall -I. -O3
 
 DEP_DIR  := ..
 SRC_DIR  := .
-TARGET   := Brute
+TARGET   := brute
 
 DEP      := $(addprefix $(DEP_DIR)/, common.cpp)
 SRC      := $(addprefix $(SRC_DIR)/, $(TARGET).cpp)

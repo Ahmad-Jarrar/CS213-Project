@@ -1,17 +1,19 @@
-CXX=g++
 # https://richardstartin.github.io/posts/mmm-revisited
-CXXFLAGS=-std=c++17 -Wall -I. -O3
+CXX      := g++
+CXXFLAGS := -std=c++17 -Wall -I. -O3
+LIBS     := -pthread
 
-INC_DIR = ..
-SRC_DIR = .
+INC_DIR  := ..
+SRC_DIR  := .
+TARGET   := loops
 
-DEPS := $(addprefix $(INC_DIR)/, common.hpp)
-SRC := $(addprefix $(SRC_DIR)/, multiply.cpp)
+DEPS     := $(addprefix $(INC_DIR)/, common.hpp)
+SRC      := $(addprefix $(SRC_DIR)/, $(TARGET).cpp)
 
-# LIBS=-lpthread
 
-multiply: $(SRC) $(DEPS) 
-	$(CXX) $(CXXFLAGS) -o $@ $^ -pthread
+$(TARGET): $(SRC) $(DEPS) 
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
+	@echo "\nSuccessful! Enter ./$(TARGET) to run.\n"
 
 clean:
-	rm -f *.o multiply
+	@rm -f *.o $(TARGET)

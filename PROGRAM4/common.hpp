@@ -6,7 +6,6 @@
 #include <boost/numeric/ublas/operation.hpp>
 #include <boost/numeric/ublas/operation_blocked.hpp>
 
-
 /*
     Takes input for dimentsions of matrix
 */
@@ -32,6 +31,7 @@ void print_matrix(boost::numeric::ublas::matrix<int> m) {
         std::cout << std::endl;
     }
 }
+
 /* 
     Initialize matrix according to the given arguments
     If random = false, initialize the matrix to given number

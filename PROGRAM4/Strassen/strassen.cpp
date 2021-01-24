@@ -25,6 +25,7 @@ void sub(matrix<int> &matrixA,
         }
     }   
 }
+
 // recursive strassen matrix multiplier
 void strassenR(matrix<int> &matrixA,
             matrix<int> &matrixB,
@@ -38,7 +39,6 @@ void strassenR(matrix<int> &matrixA,
     }
     else {
         int newMSize = mSize / 2;
-        
 
         // initialize matrices
         matrix<int> matrixA11(newMSize, newMSize),
@@ -188,7 +188,6 @@ int main()
         input(dim1, dim2);
     }
     
-
     matrix<int> A(dim1[0], dim1[1]);
     matrix<int> B(dim2[0],dim2[1]);
 
@@ -206,7 +205,8 @@ int main()
 
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start); 
 
-    std::cout << "Time taken(microseconds): " << duration.count() << std::endl;
+    std::cout << "Elapsed time for Strassen Approach: " << duration.count() <<
+        " microseconds." << std::endl;
 
     // Print product
     // print_matrix(C);

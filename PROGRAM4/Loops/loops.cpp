@@ -22,9 +22,10 @@ matrix<int> matmul_loops (matrix<int> m, matrix<int> n) {
 
     return mn;
 }
-// https://gist.github.com/nadavrot/5b35d44e8ba3dd718e595e40184d03f0
-matrix<int> matmul_loops_optimized (matrix<int> m, matrix<int> n) {
 
+// https://gist.github.com/nadavrot/5b35d44e8ba3dd718e595e40184d03f0
+matrix<int> matmul_loops_optimized (matrix<int> m, matrix<int> n) 
+{
     if (m.size2() != n.size1()) {
         perror("m.size2() != n.size1()\n");
         perror("Cannot multiply!");
@@ -41,14 +42,15 @@ matrix<int> matmul_loops_optimized (matrix<int> m, matrix<int> n) {
     return mn;
 }
 
-void multiply_slice(matrix<int> &mn, matrix<int> m, matrix<int> n, int i) {
+void multiply_slice(matrix<int> &mn, matrix<int> m, matrix<int> n, int i) 
+{
     for (size_t k = 0; k < m.size2(); k++)
         for (size_t j = 0; j < n.size2(); j++)
             mn(i,j) += m(i,k) * n(k,j);
 }
 
-matrix<int> matmul_loops_optimized_threaded (matrix<int> m, matrix<int> n) {
-
+matrix<int> matmul_loops_optimized_threaded (matrix<int> m, matrix<int> n) 
+{
     if (m.size2() != n.size1()) {
         perror("m.size2() != n.size1()\n");
         perror("Cannot multiply!");
@@ -81,7 +83,6 @@ int main()
         std::cout << "Dimensions Invalid! Matrices cannot be multiplied\n";
         input(dim1, dim2);
     }
-    
 
     matrix<int> A(dim1[0], dim1[1]);
     matrix<int> B(dim2[0],dim2[1]);
@@ -100,7 +101,8 @@ int main()
 
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start); 
     // print_matrix(C);
-    std::cout << "Time taken loops(microseconds): " << duration.count() << std::endl;
+    std::cout << "Elapsed time for Loops Approach: " << duration.count() <<
+        " microseconds." << std::endl;
     
     start = std::chrono::high_resolution_clock::now();
     C = matmul_loops_optimized(A, B);
@@ -108,7 +110,8 @@ int main()
 
     duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start); 
     // print_matrix(C);
-    std::cout << "Time taken loops Optimized(microseconds): " << duration.count() << std::endl;
+    std::cout << "Elapsed time for Loops Optimized Approach: " << duration.count() <<
+        " microseconds." << std::endl;
 
     start = std::chrono::high_resolution_clock::now();
     C = matmul_loops_optimized_threaded(A, B);
@@ -116,7 +119,8 @@ int main()
 
     duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start); 
 
-    std::cout << "Time taken loops Optimized Threaded(microseconds): " << duration.count() << std::endl;
+    std::cout << "Elapsed time for Loops Optimized Threaded Approach: " << duration.count() 
+        << " microseconds." << std::endl;
 
     // Print product
     // print_matrix(C);

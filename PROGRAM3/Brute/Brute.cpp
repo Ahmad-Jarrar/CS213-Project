@@ -8,16 +8,22 @@ void convert_string(string str1, string str2)
     int size = 0;
     string final_string = "";
 
-    // get the longest common string with an n^3 approach
+    // iterates over length of string to be 
+    // converted (str2) twice
     for (int k = 0; k < str2.length(); k++)
     {
         string b_temp = "";
         found = 0;
 
+        // finds the longest common string from
+        // kth position of str2
         for (int i = k; i < str2.length(); i++)
         {
+            // iterates over str1 to check for matches
             for (int j = found; j < str1.length(); j++)
             {
+                // in case match found, append to 
+                // temporary string 'b_temp'
                 if (str1.at(j) == str2.at(i))
                 {
                     found = j + 1;
@@ -28,6 +34,9 @@ void convert_string(string str1, string str2)
             }
         }
 
+        // if 'b_temp' is bigger than currently found
+        // substring, then update the longest common
+        // substring found
         if (b_temp.length() > size)
         {
             final_string = b_temp;
@@ -77,6 +86,7 @@ int main()
         str1 = enter_str(1);
         str2 = enter_str(2);
 
+        // starts conversion along with clock
         auto start = chrono::steady_clock::now();
         convert_string(str1, str2);
         auto end = chrono::steady_clock::now();
