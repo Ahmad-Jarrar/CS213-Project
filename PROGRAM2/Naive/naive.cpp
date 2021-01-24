@@ -1,61 +1,55 @@
-// source: https://iq.opengenus.org/longest-common-substring/
+// source: https://stackoverflow.com/questions/34412496/naive-approach-to-longest-common-subsequence
 #include "../common.h"
 
-string longest_common_substr(string str1, string str2)
+string longest_common_subseq(string str1, string str2)
 {
-    // string to store common substring
-    string ans;
+    // variables to hold substrings of str1 and str2
+    string str1Sub = "";
+    string str2Sub = "";
 
-    // bool to indicate if substring found
-    bool flg = false;
+    // if the 'str1' is not emptied, extract out from
+    // second pos upto end of string into 'str1Sub'
+    if(!str1.empty())
+        str1Sub = str1.substr(1);
 
-    // iterate through str1 twice
-    for (int i = 0; i < str1.length(); i++)
+    // if the 'str2' is not emptied, extract out from
+    // second pos upto end of string into 'str2Sub'
+    if(!str2.empty())
+        str2Sub = str2.substr(1);
+
+    // if either of the string is empty, return empty string
+    if(str1.empty() || str2.empty())
+        return "";
+
+    // if theres a match between str1 and str2 first characters
+    if(str1[0] == str2[0])
     {
-        for (int j = i; j < str1.length(); j++)
-        {
-		    // substring of str1 of length (j-i+1)
-            // starting from index i
-            string x = str1.substr(i, j - i + 1);
-            int t = 0;
-            for (int k = 0; k < str2.length(); k++)
-            {
-				// if character of substring matches
-				// that of other string
-                if(str2[k] == x[t])
-                    t++;
-                else if(t == x.length())
-                    break;
-                else
-                    t = 0;
-            }
-            if (t == x.length())
-            {
-                flg = true;
-				// if the length of found substring 
-				// is greater than that of result 
-				// update result
-                if(ans.length() < x.length())
-                    ans = x;
-            }
-        }
+        // add the match to the var 'firstOfStr1'
+        string firstOfStr1 = "";
+        firstOfStr1 += str1[0];
+
+        // recursive call on str1Sub and str2Sub
+        firstOfStr1 += longest_common_subseq(str1Sub, str2Sub);
+        return str1[0] + longest_common_subseq(str1Sub, str2Sub);
     }
-
-    // if substring is found, return it
-    if (flg)
-        return ans;
-
-    // if no common substring found, return "-1"
     else
-        return "-1";
+    {
+        string a = longest_common_subseq(str1Sub, str2);
+        string b = longest_common_subseq(str1, str2Sub);
+        
+        if(a.length() > b.length())
+            return a;
+        else
+            return b;
+    }
 }
 
 int main()
 {
-    cout << endl << "Program 2: Longest common substring search.";
+    cout << endl << "Program 2: Longest common subsequence search.";
     cout << endl << "Naive approach." << endl << endl;
     cout << "This program takes in 2 strings, and outputs the";
-    cout << endl << "longest common substring!" << endl << endl;
+    cout << endl << "longest common subsequence!" << endl << endl;
     cout << "You may enter -1 at any input prompt to exit." << endl << endl;
 
     string str1, str2, result;
@@ -67,7 +61,7 @@ int main()
         str2 = enter_str(2);
 
         auto start = chrono::steady_clock::now();
-        result = longest_common_substr(str1, str2);
+        result = longest_common_subseq(str1, str2);
         auto end = chrono::steady_clock::now();
 
         // prints the longest common substring
@@ -77,6 +71,4 @@ int main()
         cout << chrono::duration_cast<chrono::microseconds>(end - start).count();
         cout << " microseconds." << endl << endl;
     }
-    
-    return 0;
 }

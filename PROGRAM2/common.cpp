@@ -22,11 +22,11 @@ print_result(string str)
 	cout << endl << "Result:" << endl;
 
     // if string is -1, it means no common substring
-	if (str == "-1")
-		cout << "No common substring found!" << endl;
+	if (str == "")
+		cout << "No common subsequence found!" << endl;
 	else
 	{
-		cout << "Longest common substring: " << str << endl;
-		cout << "Length of substring: " << str.length() << endl;
+		cout << "Longest common subsequence: " << str << endl;
+		cout << "Length of subsequence: " << str.length() << endl;
 	}
 }

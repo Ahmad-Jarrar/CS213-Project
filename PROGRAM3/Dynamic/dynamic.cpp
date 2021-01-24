@@ -1,57 +1,67 @@
 #include "../common.h"
 
-// Function to find the minimum cost
-// to convert string str1 to str2
-void convert_string(string str1, string str2)
+string longest_common_subseq(char *S1, char *S2, int m, int n) 
 {
-    int m = str1.size();
-    int n = str2.size();
-    int L[m+1][n+1];
+    int LCS_table[m + 1][n + 1];
 
-    // using str1 2D Matrix for dynamic programming
-    // L[i][j] stores length of longest common string 
-    // for X[0:i] and Y[0:j]
-    for(int i = 0; i < m + 1; i++)
+    // Building the matrix in bottom-up way
+    for (int i = 0; i <= m; i++) 
     {
-        for(int j = 0; j < n + 1; j++)
+        for (int j = 0; j <= n; j++) 
         {
-            if(i == 0 || j == 0)
-                L[i][j] = 0;
-            else if(str1[i-1]==str2[j-1])
-                L[i][j] = L[i-1][j-1] + 1;
+            if (i == 0 || j == 0)
+                LCS_table[i][j] = 0;
+            else if (S1[i - 1] == S2[j - 1])
+                LCS_table[i][j] = LCS_table[i - 1][j - 1] + 1;
             else
-                L[i][j] = max(L[i-1][j], L[i][j-1]);        
+                LCS_table[i][j] = max(LCS_table[i - 1][j], LCS_table[i][j - 1]);
         }
     }
 
-    // Following code is used to find the common string 
-    int index = L[m][n];
+    int index = LCS_table[m][n];
+    char lcsAlgo[index + 1];
+    lcsAlgo[index] = '\0';
 
-    // Create str1 character array to store the lcs string
-    char lcs[index + 1];
-
-    // Start from the right-most-bottom-most corner and 
-    // one by one store characters in lcs[]
     int i = m, j = n;
-    while( i > 0 && j > 0)
+    while (i > 0 && j > 0) 
     {
-        // If current character in X[] and Y are same, then 
-        // current character is part of LCS
-        if(str1[i-1] == str2[j-1])
-        {
-            lcs[index-1] = str1[i-1];
+        if (S1[i - 1] == S2[j - 1]) {
+            lcsAlgo[index - 1] = S1[i - 1];
             i--;
             j--;
             index--;
         }
 
-        // If not same, then find the larger of two and 
-        // go in the direction of larger value
-        else if(L[i-1][j] > L[i][j-1])
+        else if (LCS_table[i - 1][j] > LCS_table[i][j - 1])
             i--;
         else
             j--;
     }
+
+    // Printing the sub sequences
+    //cout << "S1 : " << S1 << "\nS2 : " << S2 << "\nLCS: " << lcsAlgo << "\n";
+    cout << "i" << endl;
+
+    return string(lcsAlgo);
+}
+
+// Function to find the minimum cost
+// to convert string str1 to str2
+void find_characters(string str1, string str2)
+{
+    int n = str1.length();
+    int m = str2.length();
+ 
+    // declaring character array
+    char str1_array[n + 1];
+    char str2_array[m + 1];
+ 
+    // copying the contents of the
+    // string to char array
+    strcpy(str1_array, str1.c_str());
+    strcpy(str2_array, str2.c_str());
+
+    string lcs = longest_common_subseq(str1_array, str2_array, n, m);
 
     int ptr = 0;
     
@@ -78,7 +88,6 @@ void convert_string(string str1, string str2)
     }
 }
 
-
 int main()
 {
     cout << endl << "Program 3: String conversion insertions and deletions.";
@@ -98,7 +107,7 @@ int main()
 
         // starts conversion along with clock
         auto start = chrono::steady_clock::now();
-        convert_string(str1, str2);
+        find_characters(str1, str2);
         auto end = chrono::steady_clock::now();
 
         // prints the result and empties the vectors

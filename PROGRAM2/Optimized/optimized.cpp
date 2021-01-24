@@ -1,63 +1,56 @@
-// source: https://www.geeksforgeeks.org/print-longest-common-substring/
+// source: https://www.geeksforgeeks.org/printing-longest-common-subsequence/
 #include "../common.h"
 
-string longest_common_substr(string str1, string str2)
-{
-    // Store length of both strings
-    int m = str1.length();
-    int n = str2.length();
+string longest_common_subseq(char *S1, char *S2, int m, int n) {
+    int LCS_table[m + 1][n + 1];
 
-    // Matrix to store result of two rows consequetively
-    int dp[2][n+1];
-
-    // var 'res' stores length of lcs
-    // var 'end' stores endpoint of lcs in str1
-    // var 'row' indicates which row of matrix is current
-    int curr = 0, res = 0, end = 0;
-    
-    // Loops over str1 length
-    for(int i = 0; i <= m; i++)
+    // Building the matrix in bottom-up way
+    for (int i = 0; i <= m; i++) 
     {
-        // Loops over str2 length
-        for(int j = 0; j <= n; j++)
+        for (int j = 0; j <= n; j++) 
         {
-            // For a particular value of i and j, matrix
-            // Stores the locs length in str1 and str2
-            if(i == 0 || j == 0)
-                dp[curr][j] = 0;
-
-            else if(str1[i - 1] == str2[j - 1])
-            {
-                dp[curr][j] = dp[1 - curr][j - 1] + 1;
-                if(res < dp[curr][j])
-                {
-                    res = dp[curr][j];
-                    end = i - 1;
-                }
-            }
+            if (i == 0 || j == 0)
+                LCS_table[i][j] = 0;
+            else if (S1[i - 1] == S2[j - 1])
+                LCS_table[i][j] = LCS_table[i - 1][j - 1] + 1;
             else
-                dp[curr][j] = 0;
+                LCS_table[i][j] = max(LCS_table[i - 1][j], LCS_table[i][j - 1]);
         }
-
-        // Switch between rows, current is previous and
-        // Previous is current
-        curr = 1 - curr;
     }
 
-    // Lcs is from index (end - result + 1) for size 'res'
-    if(res != 0)
-        return str1.substr(end - res + 1, res);
-    // If no common substring, return "-1"
-    else
-        return "-1";
+    int index = LCS_table[m][n];
+    char lcsAlgo[index + 1];
+    lcsAlgo[index] = '\0';
+
+    int i = m, j = n;
+    while (i > 0 && j > 0) 
+    {
+        if (S1[i - 1] == S2[j - 1]) {
+            lcsAlgo[index - 1] = S1[i - 1];
+
+            i--;
+            j--;
+            index--;
+        }
+        else if (LCS_table[i - 1][j] > LCS_table[i][j - 1])
+            i--;
+        else
+            j--;
+    }
+
+    // Printing the sub sequences
+    //cout << "S1 : " << S1 << "\nS2 : " << S2 << "\nLCS: " << lcsAlgo << "\n";
+    cout << "i" << endl;
+
+    return string(lcsAlgo);
 }
 
 int main()
 {
-    cout << endl << "Program 2: Longest common substring search.";
+    cout << endl << "Program 2: Longest common subsequence search.";
     cout << endl << "Optimized approach." << endl << endl;
     cout << "This program takes in 2 strings, and outputs the";
-    cout << endl << "longest common substring!" << endl << endl;
+    cout << endl << "longest common subsequence!" << endl << endl;
     cout << "You may enter -1 at any input prompt to exit." << endl << endl;
 
     string str1, str2, result;
@@ -67,9 +60,21 @@ int main()
         // takes 2 strings as input
         str1 = enter_str(1);
         str2 = enter_str(2);
+ 
+        int n = str1.length();
+        int m = str2.length();
+     
+        // declaring character array
+        char str1_array[n + 1];
+        char str2_array[m + 1];
+     
+        // copying the contents of the
+        // string to char array
+        strcpy(str1_array, str1.c_str());
+        strcpy(str2_array, str2.c_str());
 
         auto start = chrono::steady_clock::now();
-        result = longest_common_substr(str1, str2);
+        result = longest_common_subseq(str1_array, str2_array, n, m);
         auto end = chrono::steady_clock::now();
 
         // prints the longest common substring

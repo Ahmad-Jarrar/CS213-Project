@@ -1,48 +1,57 @@
 #include "../common.h"
 
+string longest_common_subseq(string str1, string str2)
+{
+    // variables to hold substrings of str1 and str2
+    string str1Sub = "";
+    string str2Sub = "";
+
+    // if the 'str1' is not emptied, extract out from
+    // second pos upto end of string into 'str1Sub'
+    if(!str1.empty())
+        str1Sub = str1.substr(1);
+
+    // if the 'str2' is not emptied, extract out from
+    // second pos upto end of string into 'str2Sub'
+    if(!str2.empty())
+        str2Sub = str2.substr(1);
+
+    // if either of the string is empty, return empty string
+    if(str1.empty() || str2.empty())
+        return "";
+
+    // if theres a match between str1 and str2 first characters
+    if(str1[0] == str2[0])
+    {
+        // add the match to the var 'firstOfStr1'
+        string firstOfStr1 = "";
+        firstOfStr1 += str1[0];
+
+        // recursive call on str1Sub and str2Sub
+        firstOfStr1 += longest_common_subseq(str1Sub, str2Sub);
+        return str1[0] + longest_common_subseq(str1Sub, str2Sub);
+    }
+    else
+    {
+        string a = longest_common_subseq(str1Sub, str2);
+        string b = longest_common_subseq(str1, str2Sub);
+        
+        if(a.length() > b.length())
+            return a;
+        else
+            return b;
+    }
+}
+
 // Function to find the minimum cost
 // to convert string str1 to str2
-void convert_string(string str1, string str2)
+void find_characters(string str1, string str2)
 {
     int found = 0;
     int size = 0;
     string final_string = "";
 
-    // iterates over length of string to be 
-    // converted (str2) twice
-    for (int k = 0; k < str2.length(); k++)
-    {
-        string b_temp = "";
-        found = 0;
-
-        // finds the longest common string from
-        // kth position of str2
-        for (int i = k; i < str2.length(); i++)
-        {
-            // iterates over str1 to check for matches
-            for (int j = found; j < str1.length(); j++)
-            {
-                // in case match found, append to 
-                // temporary string 'b_temp'
-                if (str1.at(j) == str2.at(i))
-                {
-                    found = j + 1;
-                    string temp2(1, str2.at(i));
-                    b_temp += temp2;
-                    break;
-                }
-            }
-        }
-
-        // if 'b_temp' is bigger than currently found
-        // substring, then update the longest common
-        // substring found
-        if (b_temp.length() > size)
-        {
-            final_string = b_temp;
-            size = final_string.length();
-        }
-    }
+    final_string = longest_common_subseq(str1, str2);
 
     int ptr = 0;
 
@@ -88,7 +97,7 @@ int main()
 
         // starts conversion along with clock
         auto start = chrono::steady_clock::now();
-        convert_string(str1, str2);
+        find_characters(str1, str2);
         auto end = chrono::steady_clock::now();
 
         // prints the result and empties the vectors
