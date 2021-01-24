@@ -11,3 +11,5 @@ pip install -r requirements.txt
 ```
 python game.py
 ```
+
+This game is loosely based on https://github.com/LukeStorry/pygame-battleships

@@ -1,5 +1,7 @@
 #include "../common.h"
 
+// https://stackoverflow.com/questions/59013166/c-morse-to-english
+
 // Initializing character array needed for processing
 const char letters[37] = { ' ', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 
                         'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 
