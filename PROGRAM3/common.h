@@ -9,11 +9,11 @@
 
 using namespace std;
 
-extern vector<char> insertions;
-extern vector<char> deletions;
+extern string insertions;
+extern string deletions;
 
 void print_result();
-void empty_vectors();
+
 string enter_str(int);
 
 #endif
