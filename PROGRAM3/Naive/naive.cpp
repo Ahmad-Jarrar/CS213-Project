@@ -5,11 +5,9 @@
 // to convert string str1 to str2
 void find_characters(string str1, string str2)
 {
-    int found = 0;
-    int size = 0;
     string final_string = "";
-     insertions = "";
-     deletions = "";
+    insertions = "";
+    deletions = "";
 
     final_string = longest_common_subseq(str1, str2);
 
@@ -22,7 +20,7 @@ void find_characters(string str1, string str2)
         if (str1[i] == final_string[ptr])
             ptr++;
         else
-deletions = deletions +  "\'" + str1[i] + "\' ";
+            deletions = deletions +  "\'" + str1[i] + "\' ";
     }
 
     ptr = 0;

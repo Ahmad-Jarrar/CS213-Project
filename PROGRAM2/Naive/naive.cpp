@@ -1,4 +1,5 @@
-// source: https://stackoverflow.com/questions/34412496/naive-approach-to-longest-common-subsequence
+// sources: https://medium.com/@matthewwestmk/finding-the-longest-common-subsequence-lcs-of-two-strings-c68f7ec201fe
+// https://stackoverflow.com/questions/34412496/naive-approach-to-longest-common-subsequence
 #include "../common.h"
 #include "subseq.h"
 

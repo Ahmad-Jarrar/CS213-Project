@@ -2,26 +2,29 @@
 
 string longest_common_subseq(string str1, string str2)
 {
-    // variables to hold substrings of str1 and str2
-    string str1Sub = "";
-    string str2Sub = "";
-
-    // if the 'str1' is not emptied, extract out from
-    // second pos upto end of string into 'str1Sub'
-    if(!str1.empty())
-        str1Sub = str1.substr(1);
-
-    // if the 'str2' is not emptied, extract out from
-    // second pos upto end of string into 'str2Sub'
-    if(!str2.empty())
-        str2Sub = str2.substr(1);
-
     // if either of the string is empty, return empty string
     if(str1.empty() || str2.empty())
         return "";
+    
+    // extract substring starting from second 
+    // index upto the of string
+    string str1Sub = str1.substr(1);
+    string str2Sub = str2.substr(1);
 
+    // if there is no match, send with one original and one substring
+    if(str1[0] != str2[0])
+    {
+        string temp1 = longest_common_subseq(str1Sub, str2);
+        string temp2 = longest_common_subseq(str1, str2Sub);
+        
+        // return whichever is the longer subsequence found
+        if(temp1.length() >= temp2.length())
+            return temp1;
+        else
+            return temp2;
+    }
     // if theres a match between str1 and str2 first characters
-    if(str1[0] == str2[0])
+    else
     {
         // add the match to the var 'firstOfStr1'
         string firstOfStr1 = "";
@@ -30,15 +33,5 @@ string longest_common_subseq(string str1, string str2)
         // recursive call on str1Sub and str2Sub
         firstOfStr1 += longest_common_subseq(str1Sub, str2Sub);
         return str1[0] + longest_common_subseq(str1Sub, str2Sub);
-    }
-    else
-    {
-        string a = longest_common_subseq(str1Sub, str2);
-        string b = longest_common_subseq(str1, str2Sub);
-        
-        if(a.length() > b.length())
-            return a;
-        else
-            return b;
     }
 }

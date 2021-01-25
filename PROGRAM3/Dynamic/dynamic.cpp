@@ -48,19 +48,12 @@ void find_characters(string str1, string str2)
 
 int main()
 {
-    cout << endl
-         << "Program 3: String conversion insertions and deletions.";
-    cout << endl
-         << "Dynamic Programming Approach.";
-    cout << endl
-         << endl
-         << "This program takes in 2 strings, and outputs the";
-    cout << endl
-         << "characters to be inserted and deleted for conversion!";
-    cout << endl
-         << endl;
-    cout << "You may enter -1 at any input prompt to exit." << endl
-         << endl;
+    cout << endl << "Program 3: String conversion insertions and deletions.";
+    cout << endl << "Dynamic Programming Approach.";
+    cout << endl << endl << "This program takes in 2 strings, and outputs the";
+    cout << endl << "characters to be inserted and deleted for conversion!";
+    cout << endl << endl;
+    cout << "You may enter -1 at any input prompt to exit." << endl << endl;
 
     string str1, str2;
     // keeps prompting for inputs until program terminated

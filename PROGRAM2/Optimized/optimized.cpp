@@ -1,4 +1,5 @@
-// source: https://www.geeksforgeeks.org/printing-longest-common-subsequence/
+// sources: https://www.geeksforgeeks.org/printing-longest-common-subsequence/
+// https://www.programiz.com/dsa/longest-common-subsequence
 #include "../common.h"
 #include "subseq.h"
 
