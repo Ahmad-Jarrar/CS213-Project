@@ -8,6 +8,8 @@ void find_characters(string str1, string str2)
     int found = 0;
     int size = 0;
     string final_string = "";
+     insertions = "";
+     deletions = "";
 
     final_string = longest_common_subseq(str1, str2);
 
@@ -15,24 +17,24 @@ void find_characters(string str1, string str2)
 
     // compare lcs with first string to get the
     // characters which are to be deleted
-    for (int i = 0; i < str1.size(); i++)
+    for (register int i = 0; i < str1.size(); ++i)
     {
         if (str1[i] == final_string[ptr])
             ptr++;
         else
-            deletions.push_back(str1[i]);
+deletions = deletions +  "\'" + str1[i] + "\' ";
     }
 
     ptr = 0;
 
     // compare lcs with second string to get the
     // characters which are to be inserted
-    for (int i = 0; i < str2.size(); i++)
+    for (register int i = 0; i < str2.size(); ++i)
     {
         if (str2[i] == final_string[ptr])
             ptr++;
         else
-            insertions.push_back(str2[i]);
+            insertions = insertions + "\'" + str2[i] + "\' ";
     }
 }
 
@@ -60,7 +62,7 @@ int main()
 
         // prints the result and empties the vectors
         print_result();
-        empty_vectors();
+        
 
         cout << "Elapsed time for Brute Approach: ";
         cout << chrono::duration_cast<chrono::microseconds>(end - start).count()
